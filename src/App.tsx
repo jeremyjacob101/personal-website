@@ -148,7 +148,7 @@ const experienceProjects: Project[] = [
     title: "Kartiseret",
     period: "2024 - Present",
     summary:
-      "A full-stack movie discovery and showtimes platform that pulls fragmented Israeli cinema data into one motion-heavy browsing experience.",
+      "A full-stack movie discovery and showtimes platform that pulls fragmented Israeli cinema data into one seamless browsing experience.",
     stack: ["React", "TypeScript", "Python", "Supabase"],
     logoFile: "kartiseret",
     placeholderLabel: "KS",
@@ -218,7 +218,7 @@ const personalProjects: Project[] = [
     title: "T&Bee Liquid Gold",
     period: "2025",
     summary:
-      "An ongoing site with product-facing polish, support work, and iteration that still fits better here as one of your own shipped builds.",
+      "A product-focused brand site shaped around clear merchandising, polished frontend detail, and steady iteration across the customer experience.",
     stack: ["Website", "Frontend polish", "Shipped build"],
     logoFile: "tandbeeliquidgold",
     placeholderLabel: "TB",
@@ -1030,8 +1030,8 @@ function App() {
           <Section
             id="experience"
             eyebrow="Experience"
-            title="Production work that shipped, launched, or had to hold up in the real world."
-            description="A focused look at client work, product work, and shipped apps where the details had to survive actual use."
+            title="Production work that shipped, launched, and holds up in the real world."
+            description="A focused look at client work, product work, and shipped apps where the details thrive under actual use."
           >
             <Reveal>
               <div className="projects-list">
@@ -1050,8 +1050,8 @@ function App() {
           <Section
             id="personal-projects"
             eyebrow="Personal Projects"
-            title="Independent builds pulled from GitHub and shaped by curiosity."
-            description="Smaller products, utilities, and experiments from your public repos, with space for the icons you want to add later."
+            title="Independent builds shaped by curiosity."
+            description="Browser tools, desktop experiments, and practical utilities pulled from your GitHub work and built around useful everyday friction."
           >
             <Reveal delay={0.06}>
               <div className="extra-projects">
@@ -1122,7 +1122,7 @@ function App() {
           <Section
             id="contact"
             eyebrow="Contact"
-            title="Let's build something useful, fast, and actually polished."
+            title="Let's build something useful, fast, and polished."
             description="If you need someone who can move between product thinking, frontend feel, backend logic, and debugging without dropping the details, I'm easy to reach."
           >
             <Reveal className="contact-cta">
