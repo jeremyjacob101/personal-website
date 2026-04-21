@@ -1,4 +1,10 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { motion, useReducedMotion } from "framer-motion";
@@ -7,7 +13,6 @@ import {
   FaArrowRightLong,
   FaArrowUpRightFromSquare,
   FaBriefcase,
-  FaDatabase,
   FaEnvelope,
   FaFolderOpen,
   FaGithub,
@@ -16,7 +21,6 @@ import {
   FaLinkedinIn,
   FaPhone,
   FaReact,
-  FaSwift,
   FaToolbox,
   FaUserGear,
   FaCode,
@@ -24,10 +28,10 @@ import {
 import { FiSun } from "react-icons/fi";
 import {
   SiExpress,
-  SiJavascript,
+  SiFirebase,
   SiNextdotjs,
   SiNodedotjs,
-  SiPython,
+  SiSupabase,
 } from "react-icons/si";
 import "./styles.css";
 
@@ -52,6 +56,7 @@ type SignatureSkill = {
 };
 
 type StackItem = {
+  category: string;
   name: string;
   description: string;
   icon: IconType;
@@ -59,6 +64,12 @@ type StackItem = {
   tint: string;
   lightTone?: string;
   lightTint?: string;
+};
+
+type BadgeItem = {
+  name: string;
+  src: string;
+  alt: string;
 };
 
 type ContactItem = {
@@ -194,6 +205,26 @@ const experienceProjects: Project[] = [
 
 const personalProjects: Project[] = [
   {
+    title: "IINAplex",
+    period: "2026",
+    summary:
+      "A browser extension that adds a one-click Play in IINA flow to Plex Web by resolving stream URLs and handing playback off to the native desktop app.",
+    stack: ["Browser extension", "JavaScript", "Plex", "Desktop workflow"],
+    logoFile: "iinaplex",
+    placeholderLabel: "IP",
+    links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/IINAplex" }],
+  },
+  {
+    title: "T&Bee Liquid Gold",
+    period: "2025",
+    summary:
+      "An ongoing site with product-facing polish, support work, and iteration that still fits better here as one of your own shipped builds.",
+    stack: ["Website", "Frontend polish", "Shipped build"],
+    logoFile: "tandbeeliquidgold",
+    placeholderLabel: "TB",
+    links: [{ label: "Website", href: "https://tandbeeliquidgold.com/" }],
+  },
+  {
     title: "FeedScroller",
     period: "2026",
     summary:
@@ -214,16 +245,6 @@ const personalProjects: Project[] = [
     links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/ColorCal" }],
   },
   {
-    title: "CustomCal",
-    period: "2026",
-    summary:
-      "A calendar clone tool focused on selective cleanup, making it easier to duplicate calendars while removing the events you do not want.",
-    stack: ["TypeScript", "Calendar tooling", "Utility app"],
-    logoFile: "customcal",
-    placeholderLabel: "CU",
-    links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/CustomCal" }],
-  },
-  {
     title: "ColorTime",
     period: "2026",
     summary:
@@ -232,26 +253,6 @@ const personalProjects: Project[] = [
     logoFile: "colortime",
     placeholderLabel: "CT",
     links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/ColorTime" }],
-  },
-  {
-    title: "IINAplex",
-    period: "2026",
-    summary:
-      "A browser extension that adds a one-click Play in IINA flow to Plex Web by resolving stream URLs and handing playback off to the native desktop app.",
-    stack: ["Browser extension", "JavaScript", "Plex", "Desktop workflow"],
-    logoFile: "iinaplex",
-    placeholderLabel: "IP",
-    links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/IINAplex" }],
-  },
-  {
-    title: "T&Bee Liquid Gold",
-    period: "2025",
-    summary:
-      "An ongoing site with product-facing polish, support work, and iteration that still fits better here as one of your own shipped builds.",
-    stack: ["Website", "Frontend polish", "Shipped build"],
-    logoFile: "tandbeeliquidgold",
-    placeholderLabel: "TB",
-    links: [{ label: "Website", href: "https://tandbeeliquidgold.com/" }],
   },
 ];
 
@@ -290,6 +291,7 @@ const signatureSkills: SignatureSkill[] = [
 
 const frameworks: StackItem[] = [
   {
+    category: "Framework",
     name: "React",
     description:
       "Interactive interfaces with strong component structure, clean state flow, and a lot of attention to feel.",
@@ -300,6 +302,7 @@ const frameworks: StackItem[] = [
     lightTint: "rgba(131, 221, 255, 0.16)",
   },
   {
+    category: "Runtime",
     name: "Node.js",
     description:
       "Backend logic, automation, and product glue that keep the application side practical and maintainable.",
@@ -310,6 +313,7 @@ const frameworks: StackItem[] = [
     lightTint: "rgba(91, 213, 124, 0.16)",
   },
   {
+    category: "Framework",
     name: "Next.js",
     description:
       "Structured production sites and app surfaces where routing, responsiveness, and SEO need to stay clean.",
@@ -320,6 +324,7 @@ const frameworks: StackItem[] = [
     lightTint: "rgba(248, 250, 252, 0.16)",
   },
   {
+    category: "Framework",
     name: "Express",
     description:
       "Lean APIs and custom server flows when a lightweight backend is the right tool for the job.",
@@ -329,52 +334,102 @@ const frameworks: StackItem[] = [
     lightTone: "#dbe4f0",
     lightTint: "rgba(219, 228, 240, 0.14)",
   },
+  {
+    category: "Platform",
+    name: "Firebase",
+    description:
+      "Managed auth, data, and hosted product infrastructure when fast iteration matters more than custom ops.",
+    icon: SiFirebase,
+    tone: "#ffca28",
+    tint: "rgba(255, 202, 40, 0.18)",
+    lightTone: "#f4b000",
+    lightTint: "rgba(244, 176, 0, 0.16)",
+  },
+  {
+    category: "Platform",
+    name: "Supabase",
+    description:
+      "Postgres-backed product features, auth, and storage with a developer-friendly path from prototype to production.",
+    icon: SiSupabase,
+    tone: "#3ecf8e",
+    tint: "rgba(62, 207, 142, 0.16)",
+    lightTone: "#25b26f",
+    lightTint: "rgba(37, 178, 111, 0.16)",
+  },
+  {
+    category: "Technology",
+    name: "REST API",
+    description:
+      "HTTP-based system integration patterns for connecting products cleanly across clients, services, and outside data sources.",
+    icon: FaGlobe,
+    tone: "#0f9f92",
+    tint: "rgba(15, 159, 146, 0.16)",
+    lightTone: "#0b7f75",
+    lightTint: "rgba(11, 127, 117, 0.15)",
+  },
 ];
 
-const languages: StackItem[] = [
+const languages: BadgeItem[] = [
   {
-    name: "Python",
-    description:
-      "Automation, scraping, data wrangling, and backend utilities where clean scripts save a lot of manual work.",
-    icon: SiPython,
-    tone: "#3776ab",
-    tint: "rgba(55, 118, 171, 0.14)",
-    lightTone: "#7db8ef",
-    lightTint: "rgba(125, 184, 239, 0.16)",
+    name: "TypeScript",
+    alt: "TypeScript badge",
+    src: "https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white",
   },
   {
     name: "JavaScript",
-    description:
-      "UI behavior, browser-side logic, and product wiring across modern web applications.",
-    icon: SiJavascript,
-    tone: "#c59a00",
-    tint: "rgba(245, 205, 0, 0.18)",
-    lightTone: "#f2d75b",
-    lightTint: "rgba(242, 215, 91, 0.17)",
+    alt: "JavaScript badge",
+    src: "https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black",
   },
   {
     name: "Swift",
-    description:
-      "Native iOS development in SwiftUI with a focus on polish, clarity, and dependable behavior.",
-    icon: FaSwift,
-    tone: "#f05138",
-    tint: "rgba(240, 81, 56, 0.14)",
-    lightTone: "#ff8b77",
-    lightTint: "rgba(255, 139, 119, 0.16)",
+    alt: "Swift badge",
+    src: "https://img.shields.io/badge/-Swift-FA7343?style=flat-square&logo=swift&logoColor=white",
+  },
+  {
+    name: "Python",
+    alt: "Python badge",
+    src: "https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white",
   },
   {
     name: "SQL",
-    description:
-      "Schemas, queries, joins, and the data modeling decisions behind features that need to stay coherent.",
-    icon: FaDatabase,
-    tone: "#2563eb",
-    tint: "rgba(37, 99, 235, 0.12)",
-    lightTone: "#82abff",
-    lightTint: "rgba(130, 171, 255, 0.16)",
+    alt: "SQL badge",
+    src: "https://img.shields.io/badge/-SQL-4479A1?style=flat-square&logo=mysql&logoColor=white",
+  },
+  {
+    name: "Java",
+    alt: "Java badge",
+    src: "https://img.shields.io/badge/-Java-007396?style=flat-square&logo=openjdk&logoColor=white",
+  },
+  {
+    name: "C++",
+    alt: "C++ badge",
+    src: "https://img.shields.io/badge/-C%2B%2B-00599C?style=flat-square&logo=c%2B%2B&logoColor=white",
+  },
+  {
+    name: "HTML",
+    alt: "HTML badge",
+    src: "https://img.shields.io/badge/-HTML-E34F26?style=flat-square&logo=html5&logoColor=white",
+  },
+  {
+    name: "CSS",
+    alt: "CSS badge",
+    src: "https://img.shields.io/badge/CSS-1572B6?style=flat-square&logo=css3&logoColor=white",
   },
 ];
 
 function getProjectLogoSrc(project: Project, theme: Theme) {
+  if (project.logoFile === "colorcal") {
+    return theme === "light" ? "/logos/colorcal-light.jpeg" : "/logos/colorcal.png";
+  }
+
+  if (project.logoFile === "feedscroller" && theme === "light") {
+    return "/logos/feedscroller-light.jpeg";
+  }
+
+  if (project.logoFile === "colortime" && theme === "light") {
+    return "/logos/colortime-light.jpeg";
+  }
+
   if (project.logoFile === "schedulearn" && theme === "light") {
     return "/logos/schedulearn-light.jpeg";
   }
@@ -452,6 +507,156 @@ function Section({
       </Reveal>
       {children}
     </section>
+  );
+}
+
+function AutoScrollRail({
+  ariaLabel,
+  children,
+  shellClassName,
+  railClassName,
+  trackClassName,
+  speed,
+  direction = "forward",
+}: {
+  ariaLabel: string;
+  children: ReactNode;
+  shellClassName: string;
+  railClassName: string;
+  trackClassName: string;
+  speed: number;
+  direction?: "forward" | "reverse";
+}) {
+  const reducedMotion = useReducedMotion();
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const itemsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    const itemsTrack = itemsRef.current;
+
+    if (!rail || !itemsTrack || reducedMotion) {
+      return;
+    }
+
+    let frameId = 0;
+    let isVisible = false;
+    let lastTime = 0;
+
+    if (direction === "reverse") {
+      rail.scrollLeft = itemsTrack.scrollWidth;
+    } else {
+      rail.scrollLeft = 0;
+    }
+
+    const step = (time: number) => {
+      if (!isVisible) {
+        frameId = 0;
+        lastTime = 0;
+        return;
+      }
+
+      if (lastTime === 0) {
+        lastTime = time;
+      }
+
+      const delta = (time - lastTime) / 1000;
+      lastTime = time;
+      const offset = speed * delta;
+
+      if (direction === "reverse") {
+        rail.scrollLeft -= offset;
+
+        if (rail.scrollLeft <= 0) {
+          rail.scrollLeft += itemsTrack.scrollWidth;
+        }
+      } else {
+        rail.scrollLeft += offset;
+
+        if (rail.scrollLeft >= itemsTrack.scrollWidth) {
+          rail.scrollLeft -= itemsTrack.scrollWidth;
+        }
+      }
+
+      frameId = window.requestAnimationFrame(step);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry?.isIntersecting ?? false;
+
+        if (isVisible && frameId === 0) {
+          frameId = window.requestAnimationFrame(step);
+        }
+      },
+      { threshold: 0.4 },
+    );
+
+    observer.observe(rail);
+
+    return () => {
+      observer.disconnect();
+
+      if (frameId !== 0) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
+  }, [direction, reducedMotion, speed]);
+
+  return (
+    <div className={shellClassName}>
+      <div
+        ref={railRef}
+        className={railClassName}
+        role="list"
+        aria-label={ariaLabel}
+      >
+        <div ref={itemsRef} className={trackClassName}>
+          {children}
+        </div>
+        <div className={trackClassName} aria-hidden="true">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LanguagesRail({ items }: { items: BadgeItem[] }) {
+  return (
+    <AutoScrollRail
+      ariaLabel="Languages"
+      shellClassName="language-rail-shell"
+      railClassName="language-rail"
+      trackClassName="language-track"
+      speed={75}
+      direction="reverse"
+    >
+      {items.map((item) => (
+        <div key={item.name} className="language-badge" role="listitem">
+          <img alt={item.alt} loading="lazy" src={item.src} />
+        </div>
+      ))}
+    </AutoScrollRail>
+  );
+}
+
+function StackRail({ items, theme }: { items: StackItem[]; theme: Theme }) {
+  return (
+    <AutoScrollRail
+      ariaLabel="Frameworks, platforms, and technologies"
+      shellClassName="stack-rail-shell"
+      railClassName="stack-rail"
+      trackClassName="stack-track"
+      speed={45}
+      direction="forward"
+    >
+      {items.map((item) => (
+        <div key={item.name} className="stack-rail-item" role="listitem">
+          <StackTile item={item} theme={theme} />
+        </div>
+      ))}
+    </AutoScrollRail>
   );
 }
 
@@ -579,14 +784,11 @@ function ProjectCard({
 
 function StackTile({
   item,
-  category,
   theme,
 }: {
   item: StackItem;
-  category: string;
   theme: Theme;
 }) {
-  const reducedMotion = useReducedMotion();
   const Icon = item.icon;
   const tileTone =
     theme === "light" ? (item.lightTone ?? item.tone) : item.tone;
@@ -594,28 +796,30 @@ function StackTile({
     theme === "light" ? (item.lightTint ?? item.tint) : item.tint;
 
   return (
-    <Reveal delay={0.04}>
-      <motion.article
-        className="stack-tile"
-        whileHover={reducedMotion ? undefined : { y: -8, scale: 1.01 }}
-        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+    <article
+      className="stack-tile"
+      style={
+        {
+          "--tile-tone": tileTone,
+          "--tile-tint": tileTint,
+        } as CSSProperties
+      }
+    >
+      <span className="tile-category">{item.category}</span>
+      <div
+        className="tile-icon-shell"
+        style={
+          {
+            "--tile-tone": tileTone,
+            "--tile-tint": tileTint,
+          } as CSSProperties
+        }
       >
-        <span className="tile-category">{category}</span>
-        <div
-          className="tile-icon-shell"
-          style={
-            {
-              "--tile-tone": tileTone,
-              "--tile-tint": tileTint,
-            } as CSSProperties
-          }
-        >
-          <Icon className="tile-icon" />
-        </div>
-        <h3 className="tile-name">{item.name}</h3>
-        <p className="tile-description">{item.description}</p>
-      </motion.article>
-    </Reveal>
+        <Icon className="tile-icon" />
+      </div>
+      <h3 className="tile-name">{item.name}</h3>
+      <p className="tile-description">{item.description}</p>
+    </article>
   );
 }
 
@@ -850,15 +1054,26 @@ function App() {
             description="Smaller products, utilities, and experiments from your public repos, with space for the icons you want to add later."
           >
             <Reveal delay={0.06}>
-              <div className="projects-list">
-                {personalProjects.map((project, index) => (
-                  <ProjectCard
-                    key={project.title}
-                    index={index}
-                    project={project}
-                    theme={theme}
-                  />
-                ))}
+              <div className="extra-projects">
+                <div className="projects-list">
+                  {personalProjects.map((project, index) => (
+                    <ProjectCard
+                      key={project.title}
+                      index={index}
+                      project={project}
+                      theme={theme}
+                    />
+                  ))}
+                </div>
+                <a
+                  className="expand-button"
+                  href="https://github.com/jeremyjacob101?tab=repositories"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>More Projects</span>
+                  <FaArrowRightLong aria-hidden="true" />
+                </a>
               </div>
             </Reveal>
           </Section>
@@ -888,20 +1103,11 @@ function App() {
 
           <Section
             id="frameworks"
-            eyebrow="Frameworks"
+            eyebrow="Frameworks, Platforms, and Technologies"
             title="The tools I reach for when I need to move quickly without sacrificing structure."
-            description="Favorite resources for integrating external frameworks and architectures to bring clean, structured, and robust apps to fruition."
+            description="Frameworks for interface and server work, platforms for managed backend needs, and technologies that help systems talk to each other cleanly."
           >
-            <div className="badge-grid">
-              {frameworks.map((item) => (
-                <StackTile
-                  key={item.name}
-                  category="Framework"
-                  item={item}
-                  theme={theme}
-                />
-              ))}
-            </div>
+            <StackRail items={frameworks} theme={theme} />
           </Section>
 
           <Section
@@ -910,16 +1116,7 @@ function App() {
             title="The programming languages I use to make it all possible."
             description="From scripting and data cleanup to browser logic, native iOS, and relational data work, these paradigms combine seamless codebases."
           >
-            <div className="badge-grid">
-              {languages.map((item) => (
-                <StackTile
-                  key={item.name}
-                  category="Language"
-                  item={item}
-                  theme={theme}
-                />
-              ))}
-            </div>
+            <LanguagesRail items={languages} />
           </Section>
 
           <Section

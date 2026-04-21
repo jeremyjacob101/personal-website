@@ -869,6 +869,94 @@ select {
   grid-auto-rows: 1fr;
 }
 
+.language-rail-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.language-rail-shell::before,
+.language-rail-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(2.5rem, 6vw, 5rem);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.language-rail-shell::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--page-background) 8%, transparent 100%);
+}
+
+.language-rail-shell::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--page-background) 8%, transparent 100%);
+}
+
+.language-rail {
+  display: flex;
+  overflow-x: auto;
+  padding: 0.3rem 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.language-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.language-track {
+  display: flex;
+  gap: 0.9rem;
+  padding-right: 0.9rem;
+}
+
+.language-badge {
+  flex: 0 0 auto;
+  height: 3.35rem;
+}
+
+.language-badge img {
+  display: block;
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 0.85rem;
+}
+
+.stack-rail-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.stack-rail {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.3rem 0;
+  align-items: stretch;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.stack-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.stack-track {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  padding-right: 1rem;
+}
+
+.stack-rail-item {
+  flex: 0 0 calc((100% - 3rem) / 4);
+  min-width: 0;
+}
+
 .stack-tile {
   display: grid;
   grid-template-rows: auto 5.25rem minmax(3.3rem, auto) 1fr;
@@ -1004,6 +1092,10 @@ select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .language-badge {
+    height: 3.2rem;
+  }
+
   .content {
     padding-left: 0;
   }
@@ -1053,6 +1145,10 @@ select {
   .project-title-group {
     flex-wrap: wrap;
   }
+
+  .language-badge {
+    height: 3.05rem;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1066,6 +1162,10 @@ select {
 
   .badge-grid {
     grid-template-columns: 1fr;
+  }
+
+  .language-badge {
+    height: 3.1rem;
   }
 
   .button,
