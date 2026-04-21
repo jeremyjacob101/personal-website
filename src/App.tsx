@@ -1,10 +1,12 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { IconType } from "react-icons";
 import {
   FaArrowRightLong,
   FaArrowUpRightFromSquare,
+  FaBriefcase,
   FaDatabase,
   FaEnvelope,
   FaFolderOpen,
@@ -27,6 +29,7 @@ import {
   SiNodedotjs,
   SiPython,
 } from "react-icons/si";
+import "./styles.css";
 
 type LinkItem = {
   label: string;
@@ -60,6 +63,7 @@ type StackItem = {
 
 type ContactItem = {
   label: string;
+  text: string;
   href: string;
   icon: IconType;
 };
@@ -87,7 +91,8 @@ function getInitialTheme(): Theme {
 
 const navItems = [
   { label: "Home", href: "#home", icon: FaHouse },
-  { label: "Projects", href: "#projects", icon: FaFolderOpen },
+  { label: "Experience", href: "#experience", icon: FaBriefcase },
+  { label: "Projects", href: "#personal-projects", icon: FaFolderOpen },
   { label: "Known For", href: "#skills", icon: FaUserGear },
   { label: "Frameworks", href: "#frameworks", icon: FaToolbox },
   { label: "Languages", href: "#languages", icon: FaCode },
@@ -97,27 +102,37 @@ const navItems = [
 const contactItems: ContactItem[] = [
   {
     label: "Email",
+    text: "jeremyjacob101@gmail.com",
     href: "mailto:jeremyjacob101@gmail.com",
     icon: FaEnvelope,
   },
   {
     label: "Phone",
+    text: "+972 53-714-8073",
     href: "tel:+972537148073",
     icon: FaPhone,
   },
   {
+    label: "LinkedIn",
+    text: "linkedin.com/in/jeremyjacob101",
+    href: "https://linkedin.com/in/jeremyjacob101",
+    icon: FaLinkedinIn,
+  },
+  {
     label: "GitHub",
+    text: "github.com/jeremyjacob101",
     href: "https://github.com/jeremyjacob101",
     icon: FaGithub,
   },
   {
-    label: "LinkedIn",
-    href: "https://linkedin.com/in/jeremyjacob101",
-    icon: FaLinkedinIn,
+    label: "Website",
+    text: "jeremyjacob.site",
+    href: "https://jeremyjacob.site",
+    icon: FaGlobe,
   },
 ];
 
-const featuredProjects: Project[] = [
+const experienceProjects: Project[] = [
   {
     title: "Kartiseret",
     period: "2024 - Present",
@@ -161,21 +176,6 @@ const featuredProjects: Project[] = [
     ],
   },
   {
-    title: "IINAplex",
-    period: "2026",
-    summary:
-      "A browser extension that adds a one-click “Play in IINA” flow to Plex Web by resolving stream URLs and handing playback off to the native desktop app.",
-    stack: ["Browser extension", "JavaScript", "Plex", "Desktop workflow"],
-    logoFile: "iinaplex",
-    placeholderLabel: "IP",
-    links: [
-      { label: "GitHub", href: "https://github.com/jeremyjacob101/IINAplex" },
-    ],
-  },
-];
-
-const extraProjects: Project[] = [
-  {
     title: "Jerusalem Heritage Realty",
     period: "2025",
     summary:
@@ -190,27 +190,68 @@ const extraProjects: Project[] = [
       },
     ],
   },
+];
+
+const personalProjects: Project[] = [
+  {
+    title: "FeedScroller",
+    period: "2026",
+    summary:
+      "A Chrome extension that lets you jump back into your feed exactly where you left off instead of losing your place after every tab switch.",
+    stack: ["Chrome extension", "JavaScript", "UX utility"],
+    logoFile: "feedscroller",
+    placeholderLabel: "FS",
+    links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/FeedScroller" }],
+  },
+  {
+    title: "ColorCal",
+    period: "2026",
+    summary:
+      "A menu-bar calendar experiment built around color as the primary interface, turning date browsing into a more visual desktop utility.",
+    stack: ["JavaScript", "Menu bar", "Desktop utility"],
+    logoFile: "colorcal",
+    placeholderLabel: "CC",
+    links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/ColorCal" }],
+  },
+  {
+    title: "CustomCal",
+    period: "2026",
+    summary:
+      "A calendar clone tool focused on selective cleanup, making it easier to duplicate calendars while removing the events you do not want.",
+    stack: ["TypeScript", "Calendar tooling", "Utility app"],
+    logoFile: "customcal",
+    placeholderLabel: "CU",
+    links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/CustomCal" }],
+  },
+  {
+    title: "ColorTime",
+    period: "2026",
+    summary:
+      "A Mac menu-bar app that represents time through color, continuing the visual-system direction behind your other desktop experiments.",
+    stack: ["TypeScript", "Mac app", "Menu bar"],
+    logoFile: "colortime",
+    placeholderLabel: "CT",
+    links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/ColorTime" }],
+  },
+  {
+    title: "IINAplex",
+    period: "2026",
+    summary:
+      "A browser extension that adds a one-click Play in IINA flow to Plex Web by resolving stream URLs and handing playback off to the native desktop app.",
+    stack: ["Browser extension", "JavaScript", "Plex", "Desktop workflow"],
+    logoFile: "iinaplex",
+    placeholderLabel: "IP",
+    links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/IINAplex" }],
+  },
   {
     title: "T&Bee Liquid Gold",
     period: "2025",
     summary:
-      "Ongoing production site support with feature delivery, usability improvements, and clean-up work that keeps a client-facing experience polished.",
-    stack: ["Production support", "Frontend polish", "Team delivery"],
+      "An ongoing site with product-facing polish, support work, and iteration that still fits better here as one of your own shipped builds.",
+    stack: ["Website", "Frontend polish", "Shipped build"],
     logoFile: "tandbeeliquidgold",
     placeholderLabel: "TB",
     links: [{ label: "Website", href: "https://tandbeeliquidgold.com/" }],
-  },
-  {
-    title: "More Builds on GitHub",
-    period: "Always shipping",
-    summary:
-      "Experiments, utilities, side projects, and the rough-to-finished path behind the portfolio pieces above.",
-    stack: ["Experiments", "Side projects", "Open repos"],
-    logoFile: "github",
-    placeholderLabel: "GH",
-    links: [
-      { label: "GitHub profile", href: "https://github.com/jeremyjacob101" },
-    ],
   },
 ];
 
@@ -426,6 +467,9 @@ function ProjectCard({
   const reducedMotion = useReducedMotion();
   const [logoVisible, setLogoVisible] = useState(true);
   const logoSrc = getProjectLogoSrc(project, theme);
+  const primaryLink =
+    project.links.find((link) => !link.href.includes("github.com")) ??
+    project.links.find((link) => link.href.includes("github.com"));
 
   useEffect(() => {
     setLogoVisible(true);
@@ -444,26 +488,59 @@ function ProjectCard({
             <div className="project-index">
               {String(index + 1).padStart(2, "0")}
             </div>
-            <div
-              aria-label={`${project.title} logo`}
-              className="project-logo-placeholder"
-            >
-              {logoVisible ? (
-                <img
-                  key={logoSrc}
-                  alt={`${project.title} logo`}
-                  className="project-logo-image"
-                  src={logoSrc}
-                  onError={() => setLogoVisible(false)}
-                />
-              ) : (
-                <span>{project.placeholderLabel}</span>
-              )}
-            </div>
-            <div>
-              <h3 className="project-title">{project.title}</h3>
-              <p className="project-period">{project.period}</p>
-            </div>
+            {primaryLink ? (
+              <a
+                aria-label={`${project.title} primary link`}
+                className="project-primary-link"
+                href={primaryLink.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <div
+                  aria-label={`${project.title} logo`}
+                  className="project-logo-placeholder"
+                >
+                  {logoVisible ? (
+                    <img
+                      key={logoSrc}
+                      alt={`${project.title} logo`}
+                      className="project-logo-image"
+                      src={logoSrc}
+                      onError={() => setLogoVisible(false)}
+                    />
+                  ) : (
+                    <span>{project.placeholderLabel}</span>
+                  )}
+                </div>
+                <div>
+                  <h3 className="project-title">{project.title}</h3>
+                  <p className="project-period">{project.period}</p>
+                </div>
+              </a>
+            ) : (
+              <>
+                <div
+                  aria-label={`${project.title} logo`}
+                  className="project-logo-placeholder"
+                >
+                  {logoVisible ? (
+                    <img
+                      key={logoSrc}
+                      alt={`${project.title} logo`}
+                      className="project-logo-image"
+                      src={logoSrc}
+                      onError={() => setLogoVisible(false)}
+                    />
+                  ) : (
+                    <span>{project.placeholderLabel}</span>
+                  )}
+                </div>
+                <div>
+                  <h3 className="project-title">{project.title}</h3>
+                  <p className="project-period">{project.period}</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
         <p className="project-summary">{project.summary}</p>
@@ -544,7 +621,6 @@ function StackTile({
 
 function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
-  const [showMoreProjects, setShowMoreProjects] = useState(false);
   const [profileImageVisible, setProfileImageVisible] = useState(true);
   const reducedMotion = useReducedMotion();
   const nextTheme = theme === "dark" ? "light" : "dark";
@@ -718,7 +794,7 @@ function App() {
               </p>
 
               <div className="hero-actions">
-                <a className="button button-primary" href="#projects">
+                <a className="button button-primary" href="#experience">
                   Recent work
                   <FaArrowRightLong />
                 </a>
@@ -748,14 +824,14 @@ function App() {
           </section>
 
           <Section
-            id="projects"
-            eyebrow="Recent Projects"
-            title="Work that shipped, launched, or had to survive real users."
-            description="A mix of product work, personal builds, and client-facing projects. Live links where they exist, code where it makes sense."
+            id="experience"
+            eyebrow="Experience"
+            title="Production work that shipped, launched, or had to hold up in the real world."
+            description="A focused look at client work, product work, and shipped apps where the details had to survive actual use."
           >
             <Reveal>
               <div className="projects-list">
-                {featuredProjects.map((project, index) => (
+                {experienceProjects.map((project, index) => (
                   <ProjectCard
                     key={project.title}
                     index={index}
@@ -765,44 +841,26 @@ function App() {
                 ))}
               </div>
             </Reveal>
+          </Section>
 
-            <AnimatePresence initial={false}>
-              {showMoreProjects ? (
-                <motion.div
-                  className="extra-projects"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <div className="projects-list">
-                    {extraProjects.map((project, index) => (
-                      <ProjectCard
-                        key={project.title}
-                        index={featuredProjects.length + index}
-                        project={project}
-                        theme={theme}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-
-            <motion.button
-              type="button"
-              className="expand-button"
-              aria-expanded={showMoreProjects}
-              whileTap={reducedMotion ? undefined : { scale: 0.98 }}
-              onClick={() => setShowMoreProjects((value) => !value)}
-            >
-              <span aria-hidden="true" className="expand-dots">
-                {showMoreProjects ? "−" : "..."}
-              </span>
-              <span>
-                {showMoreProjects ? "Show fewer projects" : "More builds"}
-              </span>
-            </motion.button>
+          <Section
+            id="personal-projects"
+            eyebrow="Personal Projects"
+            title="Independent builds pulled from GitHub and shaped by curiosity."
+            description="Smaller products, utilities, and experiments from your public repos, with space for the icons you want to add later."
+          >
+            <Reveal delay={0.06}>
+              <div className="projects-list">
+                {personalProjects.map((project, index) => (
+                  <ProjectCard
+                    key={project.title}
+                    index={index}
+                    project={project}
+                    theme={theme}
+                  />
+                ))}
+              </div>
+            </Reveal>
           </Section>
 
           <Section
@@ -832,7 +890,7 @@ function App() {
             id="frameworks"
             eyebrow="Frameworks"
             title="The tools I reach for when I need to move quickly without sacrificing structure."
-            description="Favorite resources for integrated external frameworks and architectures to bring clean, structured, and robust apps to fruition."
+            description="Favorite resources for integrating external frameworks and architectures to bring clean, structured, and robust apps to fruition."
           >
             <div className="badge-grid">
               {frameworks.map((item) => (
@@ -849,8 +907,8 @@ function App() {
           <Section
             id="languages"
             eyebrow="Languages I Speak"
-            title="The programming languages behind most of the work above."
-            description="From scripting and data cleanup to browser logic, native iOS, and relational data work."
+            title="The programming languages I use to make it all possible."
+            description="From scripting and data cleanup to browser logic, native iOS, and relational data work, these paradigms combine seamless codebases."
           >
             <div className="badge-grid">
               {languages.map((item) => (
@@ -871,30 +929,34 @@ function App() {
             description="If you need someone who can move between product thinking, frontend feel, backend logic, and debugging without dropping the details, I'm easy to reach."
           >
             <Reveal className="contact-cta">
-              <a
-                className="contact-mail"
-                href="mailto:jeremyjacob101@gmail.com"
-              >
-                jeremyjacob101@gmail.com
-              </a>
-              <div className="contact-actions">
-                <a
-                  className="button button-primary"
-                  href="https://linkedin.com/in/jeremyjacob101"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  LinkedIn
-                  <FaArrowUpRightFromSquare />
-                </a>
-                <a
-                  className="button button-secondary"
-                  href="https://github.com/jeremyjacob101"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub
-                </a>
+              <div className="contact-list" role="list">
+                {contactItems.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <a
+                      key={item.label}
+                      className="contact-list-item"
+                      href={item.href}
+                      role="listitem"
+                      target={
+                        item.href.startsWith("http") ? "_blank" : undefined
+                      }
+                      rel={
+                        item.href.startsWith("http") ? "noreferrer" : undefined
+                      }
+                    >
+                      <span className="contact-list-icon" aria-hidden="true">
+                        <Icon />
+                      </span>
+                      <span className="contact-list-text">{item.text}</span>
+                      <FaArrowUpRightFromSquare
+                        className="contact-list-arrow"
+                        aria-hidden="true"
+                      />
+                    </a>
+                  );
+                })}
               </div>
             </Reveal>
           </Section>
@@ -905,3 +967,9 @@ function App() {
 }
 
 export default App;
+
+const rootElement = document.getElementById("root");
+
+if (rootElement) {
+  createRoot(rootElement).render(<App />);
+}

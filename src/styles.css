@@ -483,6 +483,7 @@ select {
 .content {
   min-width: 0;
   padding-left: clamp(1rem, 4vw, 3.5rem);
+  padding-right: 50px;
 }
 
 .section {
@@ -704,6 +705,22 @@ select {
   min-width: 0;
 }
 
+.project-primary-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  min-width: 0;
+  color: inherit;
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.project-primary-link:hover,
+.project-primary-link:focus-visible {
+  color: var(--text);
+  transform: translateY(-1px);
+  outline: none;
+}
+
 .project-title {
   margin: 0;
   font-size: clamp(1.45rem, 2.8vw, 2.15rem);
@@ -915,18 +932,59 @@ select {
   align-items: start;
 }
 
-.contact-mail {
-  display: inline-block;
-  max-width: fit-content;
-  font-size: clamp(1.6rem, 4vw, 2.8rem);
-  line-height: 0.95;
-  letter-spacing: -0.06em;
+.contact-list {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 42rem;
 }
 
-.contact-mail:hover,
-.contact-mail:focus-visible {
+.contact-list-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.95rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: var(--card);
+  color: var(--text);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.contact-list-item:hover,
+.contact-list-item:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  background: var(--card-strong);
   color: var(--accent);
   outline: none;
+}
+
+.contact-list-icon {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  background: var(--contact-pill-bg);
+  color: var(--contact-pill-text);
+  font-size: 0.95rem;
+}
+
+.contact-list-text {
+  min-width: 0;
+  font-size: clamp(1rem, 2.1vw, 1.18rem);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.contact-list-arrow {
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
 @media (max-width: 1024px) {
@@ -1031,12 +1089,12 @@ select {
     height: 3.55rem;
   }
 
-  .contact-actions {
-    width: 100%;
+  .contact-list-item {
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .contact-actions .button {
-    flex: 1 1 100%;
+  .contact-list-arrow {
+    display: none;
   }
 }
 
