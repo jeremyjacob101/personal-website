@@ -186,7 +186,7 @@ const extraProjects: Project[] = [
     links: [
       {
         label: "Website",
-        href: "https://www.jerusalemheritagerealty.site/",
+        href: "https://www.jhrisrael.com/",
       },
     ],
   },
