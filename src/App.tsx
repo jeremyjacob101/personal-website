@@ -1,7 +1,7 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
-import { flushSync } from 'react-dom'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import type { IconType } from 'react-icons'
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { flushSync } from "react-dom";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import type { IconType } from "react-icons";
 import {
   FaArrowRightLong,
   FaArrowUpRightFromSquare,
@@ -18,337 +18,343 @@ import {
   FaToolbox,
   FaUserGear,
   FaCode,
-} from 'react-icons/fa6'
-import { FiSun } from 'react-icons/fi'
+} from "react-icons/fa6";
+import { FiSun } from "react-icons/fi";
 import {
   SiExpress,
   SiJavascript,
   SiNextdotjs,
   SiNodedotjs,
   SiPython,
-} from 'react-icons/si'
+} from "react-icons/si";
 
 type LinkItem = {
-  label: string
-  href: string
-}
+  label: string;
+  href: string;
+};
 
 type Project = {
-  title: string
-  period: string
-  summary: string
-  stack: string[]
-  links: LinkItem[]
-  logoFile: string
-  placeholderLabel: string
-}
+  title: string;
+  period: string;
+  summary: string;
+  stack: string[];
+  links: LinkItem[];
+  logoFile: string;
+  placeholderLabel: string;
+};
 
 type SignatureSkill = {
-  title: string
-  description: string
-}
+  title: string;
+  description: string;
+};
 
 type StackItem = {
-  name: string
-  description: string
-  icon: IconType
-  tone: string
-  tint: string
-  lightTone?: string
-  lightTint?: string
-}
+  name: string;
+  description: string;
+  icon: IconType;
+  tone: string;
+  tint: string;
+  lightTone?: string;
+  lightTint?: string;
+};
 
 type ContactItem = {
-  label: string
-  href: string
-  icon: IconType
-}
+  label: string;
+  href: string;
+  icon: IconType;
+};
 
-type Theme = 'dark' | 'light'
+type Theme = "dark" | "light";
 type ViewTransitionCapableDocument = Document & {
-  startViewTransition?: (update: () => void) => void
-}
+  startViewTransition?: (update: () => void) => void;
+};
 
-const THEME_STORAGE_KEY = 'jeremy-jacob-portfolio-theme'
+const THEME_STORAGE_KEY = "jeremy-jacob-portfolio-theme";
 
 function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') {
-    return 'dark'
+  if (typeof window === "undefined") {
+    return "dark";
   }
 
-  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY)
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
 
-  if (storedTheme === 'light' || storedTheme === 'dark') {
-    return storedTheme
+  if (storedTheme === "light" || storedTheme === "dark") {
+    return storedTheme;
   }
 
-  return 'dark'
+  return "dark";
 }
 
 const navItems = [
-  { label: 'Home', href: '#home', icon: FaHouse },
-  { label: 'Projects', href: '#projects', icon: FaFolderOpen },
-  { label: 'Known For', href: '#skills', icon: FaUserGear },
-  { label: 'Frameworks', href: '#frameworks', icon: FaToolbox },
-  { label: 'Languages', href: '#languages', icon: FaCode },
-  { label: 'Contact', href: '#contact', icon: FaEnvelope },
-]
+  { label: "Home", href: "#home", icon: FaHouse },
+  { label: "Projects", href: "#projects", icon: FaFolderOpen },
+  { label: "Known For", href: "#skills", icon: FaUserGear },
+  { label: "Frameworks", href: "#frameworks", icon: FaToolbox },
+  { label: "Languages", href: "#languages", icon: FaCode },
+  { label: "Contact", href: "#contact", icon: FaEnvelope },
+];
 
 const contactItems: ContactItem[] = [
   {
-    label: 'Email',
-    href: 'mailto:jeremyjacob101@gmail.com',
+    label: "Email",
+    href: "mailto:jeremyjacob101@gmail.com",
     icon: FaEnvelope,
   },
   {
-    label: 'Phone',
-    href: 'tel:+972537148073',
+    label: "Phone",
+    href: "tel:+972537148073",
     icon: FaPhone,
   },
   {
-    label: 'GitHub',
-    href: 'https://github.com/jeremyjacob101',
+    label: "GitHub",
+    href: "https://github.com/jeremyjacob101",
     icon: FaGithub,
   },
   {
-    label: 'LinkedIn',
-    href: 'https://linkedin.com/in/jeremyjacob101',
+    label: "LinkedIn",
+    href: "https://linkedin.com/in/jeremyjacob101",
     icon: FaLinkedinIn,
   },
-]
+];
 
 const featuredProjects: Project[] = [
   {
-    title: 'Kartiseret',
-    period: '2024 - Present',
+    title: "Kartiseret",
+    period: "2024 - Present",
     summary:
-      'A full-stack movie discovery and showtimes platform that pulls fragmented Israeli cinema data into one motion-heavy browsing experience.',
-    stack: ['React', 'TypeScript', 'Python', 'Supabase'],
-    logoFile: 'kartiseret',
-    placeholderLabel: 'KS',
+      "A full-stack movie discovery and showtimes platform that pulls fragmented Israeli cinema data into one motion-heavy browsing experience.",
+    stack: ["React", "TypeScript", "Python", "Supabase"],
+    logoFile: "kartiseret",
+    placeholderLabel: "KS",
     links: [
-      { label: 'Live site', href: 'https://www.seret.site/' },
-      { label: 'GitHub', href: 'https://github.com/jeremyjacob101/Kartiseret' },
+      { label: "Live site", href: "https://www.seret.site/" },
+      { label: "GitHub", href: "https://github.com/jeremyjacob101/Kartiseret" },
     ],
   },
   {
-    title: 'Schedulearn',
-    period: '2025 - Present',
+    title: "Schedulearn",
+    period: "2025 - Present",
     summary:
-      'Production product work focused on TypeScript feature delivery, configurable schedule exports, and debugging across the stack with product teammates.',
-    stack: ['TypeScript', 'Product work', 'PDF export', 'Reliability'],
-    logoFile: 'schedulearn',
-    placeholderLabel: 'SC',
-    links: [{ label: 'Website', href: 'https://schedulearn.com/' }],
+      "Production product work focused on TypeScript feature delivery, configurable schedule exports, and debugging across the stack with product teammates.",
+    stack: ["TypeScript", "Product work", "PDF export", "Reliability"],
+    logoFile: "schedulearn",
+    placeholderLabel: "SC",
+    links: [{ label: "Website", href: "https://schedulearn.com/" }],
   },
   {
-    title: 'Shabbat Alarm Clock',
-    period: '2026',
+    title: "Shabbat Alarm Clock",
+    period: "2026",
     summary:
-      'A calm local-first SwiftUI alarm app for weekly Shabbat routines, bilingual UX, and dependable notification behavior without a backend.',
-    stack: ['SwiftUI', 'iOS', 'Localization', 'Notifications'],
-    logoFile: 'shabbatalarmclock',
-    placeholderLabel: 'SA',
+      "A calm local-first SwiftUI alarm app for weekly Shabbat routines, bilingual UX, and dependable notification behavior without a backend.",
+    stack: ["SwiftUI", "iOS", "Localization", "Notifications"],
+    logoFile: "shabbatalarmclock",
+    placeholderLabel: "SA",
     links: [
       {
-        label: 'App Store',
-        href: 'https://apps.apple.com/us/app/shabbat-alarm-clock/id6759681065',
+        label: "App Store",
+        href: "https://apps.apple.com/us/app/shabbat-alarm-clock/id6759681065",
       },
       {
-        label: 'GitHub',
-        href: 'https://github.com/jeremyjacob101/ShabbatAlarmClock',
+        label: "GitHub",
+        href: "https://github.com/jeremyjacob101/ShabbatAlarmClock",
       },
     ],
   },
   {
-    title: 'IINAplex',
-    period: '2026',
+    title: "IINAplex",
+    period: "2026",
     summary:
-      'A browser extension that adds a one-click “Play in IINA” flow to Plex Web by resolving stream URLs and handing playback off to the native desktop app.',
-    stack: ['Browser extension', 'JavaScript', 'Plex', 'Desktop workflow'],
-    logoFile: 'iinaplex',
-    placeholderLabel: 'IP',
+      "A browser extension that adds a one-click “Play in IINA” flow to Plex Web by resolving stream URLs and handing playback off to the native desktop app.",
+    stack: ["Browser extension", "JavaScript", "Plex", "Desktop workflow"],
+    logoFile: "iinaplex",
+    placeholderLabel: "IP",
     links: [
-      { label: 'GitHub', href: 'https://github.com/jeremyjacob101/IINAplex' },
+      { label: "GitHub", href: "https://github.com/jeremyjacob101/IINAplex" },
     ],
   },
-]
+];
 
 const extraProjects: Project[] = [
   {
-    title: 'Jerusalem Heritage Realty',
-    period: '2025',
+    title: "Jerusalem Heritage Realty",
+    period: "2025",
     summary:
-      'A responsive real-estate website built from scratch with reusable Next.js components and integrations that keep listings feeling current and easy to browse.',
-    stack: ['Next.js', 'Responsive UI', 'Integrations'],
-    logoFile: 'jerusalemheritagerealty',
-    placeholderLabel: 'JH',
+      "A responsive real-estate website built from scratch with reusable Next.js components and integrations that keep listings feeling current and easy to browse.",
+    stack: ["Next.js", "Responsive UI", "Integrations"],
+    logoFile: "jerusalemheritagerealty",
+    placeholderLabel: "JH",
     links: [
       {
-        label: 'Website',
-        href: 'https://www.jerusalemheritagerealty.site/',
+        label: "Website",
+        href: "https://www.jerusalemheritagerealty.site/",
       },
     ],
   },
   {
-    title: 'T&Bee Liquid Gold',
-    period: '2025',
+    title: "T&Bee Liquid Gold",
+    period: "2025",
     summary:
-      'Ongoing production site support with feature delivery, usability improvements, and clean-up work that keeps a client-facing experience polished.',
-    stack: ['Production support', 'Frontend polish', 'Team delivery'],
-    logoFile: 'tandbeeliquidgold',
-    placeholderLabel: 'TB',
-    links: [{ label: 'Website', href: 'https://tandbeeliquidgold.com/' }],
+      "Ongoing production site support with feature delivery, usability improvements, and clean-up work that keeps a client-facing experience polished.",
+    stack: ["Production support", "Frontend polish", "Team delivery"],
+    logoFile: "tandbeeliquidgold",
+    placeholderLabel: "TB",
+    links: [{ label: "Website", href: "https://tandbeeliquidgold.com/" }],
   },
   {
-    title: 'More Builds on GitHub',
-    period: 'Always shipping',
+    title: "More Builds on GitHub",
+    period: "Always shipping",
     summary:
-      'Experiments, utilities, side projects, and the rough-to-finished path behind the portfolio pieces above.',
-    stack: ['Experiments', 'Side projects', 'Open repos'],
-    logoFile: 'github',
-    placeholderLabel: 'GH',
-    links: [{ label: 'GitHub profile', href: 'https://github.com/jeremyjacob101' }],
+      "Experiments, utilities, side projects, and the rough-to-finished path behind the portfolio pieces above.",
+    stack: ["Experiments", "Side projects", "Open repos"],
+    logoFile: "github",
+    placeholderLabel: "GH",
+    links: [
+      { label: "GitHub profile", href: "https://github.com/jeremyjacob101" },
+    ],
   },
-]
+];
 
 const signatureSkills: SignatureSkill[] = [
   {
-    title: 'End-to-End Ownership',
+    title: "End-to-End Ownership",
     description:
-      'I am comfortable taking a product from interface decisions to backend logic, data shape, deployment details, and the cleanup work that makes it hold together.',
+      "I am comfortable taking a product from interface decisions to backend logic, data shape, deployment details, and the cleanup work that makes it hold together.",
   },
   {
-    title: 'Deep Debugging',
+    title: "Deep Debugging",
     description:
-      'I like sitting with a problem until it is actually understood, not just patched. Edge cases, subtle regressions, and messy interactions are usually where I lean in.',
+      "I like sitting with a problem until it is actually understood, not just patched. Edge cases, subtle regressions, and messy interactions are usually where I lean in.",
   },
   {
-    title: 'API + Data Integration',
+    title: "API + Data Integration",
     description:
-      'A lot of my work lives where outside systems meet product logic: ingesting data, cleaning it up, shaping it into something reliable, and making it usable in the UI.',
+      "A lot of my work lives where outside systems meet product logic: ingesting data, cleaning it up, shaping it into something reliable, and making it usable in the UI.",
   },
   {
-    title: 'Frontend Polish',
+    title: "Frontend Polish",
     description:
-      'I care about responsiveness, motion, clarity, and the small interaction choices that make software feel intentional instead of merely functional.',
+      "I care about responsiveness, motion, clarity, and the small interaction choices that make software feel intentional instead of merely functional.",
   },
   {
-    title: 'Reliable Shipping',
+    title: "Reliable Shipping",
     description:
-      'I am used to working on production features where getting the behavior, edge cases, and maintainability right matters more than just getting something on screen quickly.',
+      "I am used to working on production features where getting the behavior, edge cases, and maintainability right matters more than just getting something on screen quickly.",
   },
   {
-    title: 'Fast Ramp-Up',
+    title: "Fast Ramp-Up",
     description:
-      'I learn new stacks quickly, but I also try to ground them in strong computer science fundamentals so the code is not only working today, but structured well for tomorrow.',
+      "I learn new stacks quickly, but I also try to ground them in strong computer science fundamentals so the code is not only working today, but structured well for tomorrow.",
   },
-]
+];
 
 const frameworks: StackItem[] = [
   {
-    name: 'React',
+    name: "React",
     description:
-      'Interactive interfaces with strong component structure, clean state flow, and a lot of attention to feel.',
+      "Interactive interfaces with strong component structure, clean state flow, and a lot of attention to feel.",
     icon: FaReact,
-    tone: '#1d9bf0',
-    tint: 'rgba(29, 155, 240, 0.14)',
-    lightTone: '#83ddff',
-    lightTint: 'rgba(131, 221, 255, 0.16)',
+    tone: "#1d9bf0",
+    tint: "rgba(29, 155, 240, 0.14)",
+    lightTone: "#83ddff",
+    lightTint: "rgba(131, 221, 255, 0.16)",
   },
   {
-    name: 'Node.js',
+    name: "Node.js",
     description:
-      'Backend logic, automation, and product glue that keep the application side practical and maintainable.',
+      "Backend logic, automation, and product glue that keep the application side practical and maintainable.",
     icon: SiNodedotjs,
-    tone: '#2ea043',
-    tint: 'rgba(46, 160, 67, 0.14)',
-    lightTone: '#5bd57c',
-    lightTint: 'rgba(91, 213, 124, 0.16)',
+    tone: "#2ea043",
+    tint: "rgba(46, 160, 67, 0.14)",
+    lightTone: "#5bd57c",
+    lightTint: "rgba(91, 213, 124, 0.16)",
   },
   {
-    name: 'Next.js',
+    name: "Next.js",
     description:
-      'Structured production sites and app surfaces where routing, responsiveness, and SEO need to stay clean.',
+      "Structured production sites and app surfaces where routing, responsiveness, and SEO need to stay clean.",
     icon: SiNextdotjs,
-    tone: '#0f172a',
-    tint: 'rgba(15, 23, 42, 0.1)',
-    lightTone: '#f8fafc',
-    lightTint: 'rgba(248, 250, 252, 0.16)',
+    tone: "#0f172a",
+    tint: "rgba(15, 23, 42, 0.1)",
+    lightTone: "#f8fafc",
+    lightTint: "rgba(248, 250, 252, 0.16)",
   },
   {
-    name: 'Express',
+    name: "Express",
     description:
-      'Lean APIs and custom server flows when a lightweight backend is the right tool for the job.',
+      "Lean APIs and custom server flows when a lightweight backend is the right tool for the job.",
     icon: SiExpress,
-    tone: '#334155',
-    tint: 'rgba(51, 65, 85, 0.1)',
-    lightTone: '#dbe4f0',
-    lightTint: 'rgba(219, 228, 240, 0.14)',
+    tone: "#334155",
+    tint: "rgba(51, 65, 85, 0.1)",
+    lightTone: "#dbe4f0",
+    lightTint: "rgba(219, 228, 240, 0.14)",
   },
-]
+];
 
 const languages: StackItem[] = [
   {
-    name: 'Python',
+    name: "Python",
     description:
-      'Automation, scraping, data wrangling, and backend utilities where clean scripts save a lot of manual work.',
+      "Automation, scraping, data wrangling, and backend utilities where clean scripts save a lot of manual work.",
     icon: SiPython,
-    tone: '#3776ab',
-    tint: 'rgba(55, 118, 171, 0.14)',
-    lightTone: '#7db8ef',
-    lightTint: 'rgba(125, 184, 239, 0.16)',
+    tone: "#3776ab",
+    tint: "rgba(55, 118, 171, 0.14)",
+    lightTone: "#7db8ef",
+    lightTint: "rgba(125, 184, 239, 0.16)",
   },
   {
-    name: 'JavaScript',
+    name: "JavaScript",
     description:
-      'UI behavior, browser-side logic, and product wiring across modern web applications.',
+      "UI behavior, browser-side logic, and product wiring across modern web applications.",
     icon: SiJavascript,
-    tone: '#c59a00',
-    tint: 'rgba(245, 205, 0, 0.18)',
-    lightTone: '#f2d75b',
-    lightTint: 'rgba(242, 215, 91, 0.17)',
+    tone: "#c59a00",
+    tint: "rgba(245, 205, 0, 0.18)",
+    lightTone: "#f2d75b",
+    lightTint: "rgba(242, 215, 91, 0.17)",
   },
   {
-    name: 'Swift',
+    name: "Swift",
     description:
-      'Native iOS development in SwiftUI with a focus on polish, clarity, and dependable behavior.',
+      "Native iOS development in SwiftUI with a focus on polish, clarity, and dependable behavior.",
     icon: FaSwift,
-    tone: '#f05138',
-    tint: 'rgba(240, 81, 56, 0.14)',
-    lightTone: '#ff8b77',
-    lightTint: 'rgba(255, 139, 119, 0.16)',
+    tone: "#f05138",
+    tint: "rgba(240, 81, 56, 0.14)",
+    lightTone: "#ff8b77",
+    lightTint: "rgba(255, 139, 119, 0.16)",
   },
   {
-    name: 'SQL',
+    name: "SQL",
     description:
-      'Schemas, queries, joins, and the data modeling decisions behind features that need to stay coherent.',
+      "Schemas, queries, joins, and the data modeling decisions behind features that need to stay coherent.",
     icon: FaDatabase,
-    tone: '#2563eb',
-    tint: 'rgba(37, 99, 235, 0.12)',
-    lightTone: '#82abff',
-    lightTint: 'rgba(130, 171, 255, 0.16)',
+    tone: "#2563eb",
+    tint: "rgba(37, 99, 235, 0.12)",
+    lightTone: "#82abff",
+    lightTint: "rgba(130, 171, 255, 0.16)",
   },
-]
+];
 
 function getProjectLogoSrc(project: Project, theme: Theme) {
-  if (project.logoFile === 'schedulearn' && theme === 'light') {
-    return '/logos/schedulearn-light.jpeg'
+  if (project.logoFile === "schedulearn" && theme === "light") {
+    return "/logos/schedulearn-light.jpeg";
   }
 
-    if (project.logoFile === 'shabbatalarmclock' && theme === 'light') {
-    return '/logos/shabbatalarmclock-light.jpeg'
+  if (project.logoFile === "shabbatalarmclock" && theme === "light") {
+    return "/logos/shabbatalarmclock-light.jpeg";
   }
 
-  if (project.logoFile === 'iinaplex' && theme === 'light') {
-    return '/logos/iinaplex-light.jpeg'
+  if (project.logoFile === "iinaplex" && theme === "light") {
+    return "/logos/iinaplex-light.jpeg";
   }
 
-  if (project.logoFile === 'jerusalemheritagerealty' && theme === 'light') {
-    return '/logos/jerusalemheritagerealty-light.jpeg'
+  if (project.logoFile === "jerusalemheritagerealty" && theme === "light") {
+    return "/logos/jerusalemheritagerealty-light.jpeg";
   }
 
-  return `/logos/${project.logoFile}.jpeg`
+  if (project.logoFile === "tandbeeliquidgold" && theme === "light") {
+    return "/logos/tandbeeliquidgold-light.jpeg";
+  }
+
+  return `/logos/${project.logoFile}.jpeg`;
 }
 
 function Reveal({
@@ -356,14 +362,14 @@ function Reveal({
   className,
   delay = 0,
 }: {
-  children: ReactNode
-  className?: string
-  delay?: number
+  children: ReactNode;
+  className?: string;
+  delay?: number;
 }) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useReducedMotion();
 
   if (reducedMotion) {
-    return <div className={className}>{children}</div>
+    return <div className={className}>{children}</div>;
   }
 
   return (
@@ -380,7 +386,7 @@ function Reveal({
     >
       {children}
     </motion.div>
-  )
+  );
 }
 
 function Section({
@@ -390,17 +396,14 @@ function Section({
   description,
   children,
 }: {
-  id: string
-  eyebrow: string
-  title: string
-  description: string
-  children: ReactNode
+  id: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  children: ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      className="section"
-    >
+    <section id={id} className="section">
       <Reveal className="section-head">
         <p className="section-eyebrow">{eyebrow}</p>
         <h2 className="section-title">{title}</h2>
@@ -408,7 +411,7 @@ function Section({
       </Reveal>
       {children}
     </section>
-  )
+  );
 }
 
 function ProjectCard({
@@ -416,17 +419,17 @@ function ProjectCard({
   index,
   theme,
 }: {
-  project: Project
-  index: number
-  theme: Theme
+  project: Project;
+  index: number;
+  theme: Theme;
 }) {
-  const reducedMotion = useReducedMotion()
-  const [logoVisible, setLogoVisible] = useState(true)
-  const logoSrc = getProjectLogoSrc(project, theme)
+  const reducedMotion = useReducedMotion();
+  const [logoVisible, setLogoVisible] = useState(true);
+  const logoSrc = getProjectLogoSrc(project, theme);
 
   useEffect(() => {
-    setLogoVisible(true)
-  }, [logoSrc])
+    setLogoVisible(true);
+  }, [logoSrc]);
 
   return (
     <motion.article
@@ -436,7 +439,9 @@ function ProjectCard({
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="project-rail">
-        <div className="project-index">{String(index + 1).padStart(2, '0')}</div>
+        <div className="project-index">
+          {String(index + 1).padStart(2, "0")}
+        </div>
         <div
           aria-label={`${project.title} logo placeholder`}
           className="project-logo-placeholder"
@@ -464,10 +469,7 @@ function ProjectCard({
         <p className="project-summary">{project.summary}</p>
         <div className="tag-list">
           {project.stack.map((item) => (
-            <span
-              key={item}
-              className="tag"
-            >
+            <span key={item} className="tag">
               {item}
             </span>
           ))}
@@ -475,7 +477,9 @@ function ProjectCard({
       </div>
       <div className="project-links">
         {project.links.map((link) => {
-          const LinkIcon = link.href.includes('github.com') ? FaGithub : FaGlobe
+          const LinkIcon = link.href.includes("github.com")
+            ? FaGithub
+            : FaGlobe;
 
           return (
             <a
@@ -489,11 +493,11 @@ function ProjectCard({
             >
               <LinkIcon aria-hidden="true" />
             </a>
-          )
+          );
         })}
       </div>
     </motion.article>
-  )
+  );
 }
 
 function StackTile({
@@ -501,14 +505,16 @@ function StackTile({
   category,
   theme,
 }: {
-  item: StackItem
-  category: string
-  theme: Theme
+  item: StackItem;
+  category: string;
+  theme: Theme;
 }) {
-  const reducedMotion = useReducedMotion()
-  const Icon = item.icon
-  const tileTone = theme === 'light' ? item.lightTone ?? item.tone : item.tone
-  const tileTint = theme === 'light' ? item.lightTint ?? item.tint : item.tint
+  const reducedMotion = useReducedMotion();
+  const Icon = item.icon;
+  const tileTone =
+    theme === "light" ? (item.lightTone ?? item.tone) : item.tone;
+  const tileTint =
+    theme === "light" ? (item.lightTint ?? item.tint) : item.tint;
 
   return (
     <Reveal delay={0.04}>
@@ -522,8 +528,8 @@ function StackTile({
           className="tile-icon-shell"
           style={
             {
-              '--tile-tone': tileTone,
-              '--tile-tint': tileTint,
+              "--tile-tone": tileTone,
+              "--tile-tint": tileTint,
             } as CSSProperties
           }
         >
@@ -533,56 +539,50 @@ function StackTile({
         <p className="tile-description">{item.description}</p>
       </motion.article>
     </Reveal>
-  )
+  );
 }
 
 function App() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme)
-  const [showMoreProjects, setShowMoreProjects] = useState(false)
-  const [profileImageVisible, setProfileImageVisible] = useState(true)
-  const reducedMotion = useReducedMotion()
-  const nextTheme = theme === 'dark' ? 'light' : 'dark'
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [showMoreProjects, setShowMoreProjects] = useState(false);
+  const [profileImageVisible, setProfileImageVisible] = useState(true);
+  const reducedMotion = useReducedMotion();
+  const nextTheme = theme === "dark" ? "light" : "dark";
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme)
-  }, [theme])
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   function toggleTheme() {
     const applyTheme = () =>
-      setTheme((value) => (value === 'dark' ? 'light' : 'dark'))
+      setTheme((value) => (value === "dark" ? "light" : "dark"));
 
     if (reducedMotion) {
-      applyTheme()
-      return
+      applyTheme();
+      return;
     }
 
-    const documentWithTransition = document as ViewTransitionCapableDocument
+    const documentWithTransition = document as ViewTransitionCapableDocument;
 
     if (!documentWithTransition.startViewTransition) {
-      applyTheme()
-      return
+      applyTheme();
+      return;
     }
 
     documentWithTransition.startViewTransition(() => {
       flushSync(() => {
-        applyTheme()
-      })
-    })
+        applyTheme();
+      });
+    });
   }
 
   return (
-    <div
-      className="page-shell"
-      id="home"
-    >
+    <div className="page-shell" id="home">
       <header className="topbar">
         <div className="topbar-inner">
           <div className="topbar-actions">
-            <nav
-              aria-label="Section navigation"
-              className="nav"
-            >
+            <nav aria-label="Section navigation" className="nav">
               {navItems.map((item) => (
                 <a
                   key={item.href}
@@ -600,7 +600,7 @@ function App() {
               type="button"
               className="theme-toggle"
               aria-label={`Switch to ${nextTheme} mode`}
-              aria-pressed={theme === 'light'}
+              aria-pressed={theme === "light"}
               title={`Switch to ${nextTheme} mode`}
               whileTap={reducedMotion ? undefined : { scale: 0.97 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -609,9 +609,9 @@ function App() {
               <motion.span
                 aria-hidden="true"
                 animate={{
-                  opacity: theme === 'light' ? 0.92 : 0.78,
-                  rotate: theme === 'light' ? 90 : 0,
-                  scale: theme === 'light' ? 0.92 : 1,
+                  opacity: theme === "light" ? 0.92 : 0.78,
+                  rotate: theme === "light" ? 90 : 0,
+                  scale: theme === "light" ? 0.92 : 1,
                 }}
                 className="theme-toggle-glyph"
                 transition={{
@@ -633,7 +633,7 @@ function App() {
             <section className="identity-card">
               <div className="identity-media">
                 <div
-                  className={`identity-portrait${profileImageVisible ? ' identity-portrait-live' : ''}`}
+                  className={`identity-portrait${profileImageVisible ? " identity-portrait-live" : ""}`}
                 >
                   {profileImageVisible ? (
                     <img
@@ -663,7 +663,7 @@ function App() {
 
               <div className="contact-row">
                 {contactItems.map((item) => {
-                  const Icon = item.icon
+                  const Icon = item.icon;
 
                   return (
                     <a
@@ -671,14 +671,16 @@ function App() {
                       aria-label={item.label}
                       className="contact-link"
                       href={item.href}
-                      target={item.href.startsWith('http') ? '_blank' : undefined}
+                      target={
+                        item.href.startsWith("http") ? "_blank" : undefined
+                      }
                       rel={
-                        item.href.startsWith('http') ? 'noreferrer' : undefined
+                        item.href.startsWith("http") ? "noreferrer" : undefined
                       }
                     >
                       <Icon />
                     </a>
-                  )
+                  );
                 })}
               </div>
             </section>
@@ -716,10 +718,7 @@ function App() {
               </p>
 
               <div className="hero-actions">
-                <a
-                  className="button button-primary"
-                  href="#projects"
-                >
+                <a className="button button-primary" href="#projects">
                   Recent work
                   <FaArrowRightLong />
                 </a>
@@ -733,17 +732,14 @@ function App() {
 
               <div className="hero-chip-row">
                 {[
-                  'React',
-                  'Next.js',
-                  'TypeScript',
-                  'Python',
-                  'SQL',
-                  'SwiftUI',
+                  "React",
+                  "Next.js",
+                  "TypeScript",
+                  "Python",
+                  "SQL",
+                  "SwiftUI",
                 ].map((chip) => (
-                  <span
-                    key={chip}
-                    className="hero-chip"
-                  >
+                  <span key={chip} className="hero-chip">
                     {chip}
                   </span>
                 ))}
@@ -775,7 +771,7 @@ function App() {
                 <motion.div
                   className="extra-projects"
                   initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 >
@@ -800,32 +796,28 @@ function App() {
               whileTap={reducedMotion ? undefined : { scale: 0.98 }}
               onClick={() => setShowMoreProjects((value) => !value)}
             >
-              <span
-                aria-hidden="true"
-                className="expand-dots"
-              >
-                {showMoreProjects ? '−' : '...'}
+              <span aria-hidden="true" className="expand-dots">
+                {showMoreProjects ? "−" : "..."}
               </span>
-              <span>{showMoreProjects ? 'Show fewer projects' : 'More builds'}</span>
+              <span>
+                {showMoreProjects ? "Show fewer projects" : "More builds"}
+              </span>
             </motion.button>
           </Section>
 
           <Section
             id="skills"
-            eyebrow="What I&apos;m Known For"
+            eyebrow="What I'm Known For"
             title="Detail-first work, thoughtful systems, and a bias toward solving the whole problem."
             description="Based on the way I work today. Easy to swap once you send a more specific list, but this is the right direction from your resume and project history."
           >
             <div className="known-for-list">
               {signatureSkills.map((skill, index) => (
-                <Reveal
-                  key={skill.title}
-                  delay={index * 0.04}
-                >
+                <Reveal key={skill.title} delay={index * 0.04}>
                   <article className="known-for-row">
                     <div className="known-for-title-block">
                       <span className="known-for-count">
-                        {String(index + 1).padStart(2, '0')}
+                        {String(index + 1).padStart(2, "0")}
                       </span>
                       <h3 className="known-for-title">{skill.title}</h3>
                     </div>
@@ -875,8 +867,8 @@ function App() {
           <Section
             id="contact"
             eyebrow="Contact"
-            title="Let&apos;s build something useful, fast, and actually polished."
-            description="If you need someone who can move between product thinking, frontend feel, backend logic, and debugging without dropping the details, I&apos;m easy to reach."
+            title="Let's build something useful, fast, and actually polished."
+            description="If you need someone who can move between product thinking, frontend feel, backend logic, and debugging without dropping the details, I'm easy to reach."
           >
             <Reveal className="contact-cta">
               <a
@@ -909,7 +901,7 @@ function App() {
         </main>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
