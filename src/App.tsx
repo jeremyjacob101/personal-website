@@ -979,7 +979,7 @@ function App() {
               }}
             >
               <p className="hero-eyebrow">
-                Production web apps, iOS builds, and calm systems that are built
+                Production web apps, iOS builds, and robust codebases that are built
                 to last.
               </p>
               <div className="hero-display">
@@ -1067,7 +1067,7 @@ function App() {
                 </div>
                 <a
                   className="expand-button"
-                  href="https://github.com/jeremyjacob101?tab=repositories"
+                  href="https://github.com/jeremyjacob101"
                   target="_blank"
                   rel="noreferrer"
                 >
