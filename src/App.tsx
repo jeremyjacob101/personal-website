@@ -438,32 +438,32 @@ function ProjectCard({
       whileHover={reducedMotion ? undefined : { x: 8 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="project-rail">
-        <div className="project-index">
-          {String(index + 1).padStart(2, "0")}
-        </div>
-        <div
-          aria-label={`${project.title} logo placeholder`}
-          className="project-logo-placeholder"
-        >
-          {logoVisible ? (
-            <img
-              key={logoSrc}
-              alt={`${project.title} logo`}
-              className="project-logo-image"
-              src={logoSrc}
-              onError={() => setLogoVisible(false)}
-            />
-          ) : (
-            <span>{project.placeholderLabel}</span>
-          )}
-        </div>
-      </div>
       <div className="project-main">
         <div className="project-title-row">
-          <div>
+          <div className="project-title-group">
+            <div className="project-index">
+              {String(index + 1).padStart(2, "0")}
+            </div>
+            <div
+              aria-label={`${project.title} logo`}
+              className="project-logo-placeholder"
+            >
+              {logoVisible ? (
+                <img
+                  key={logoSrc}
+                  alt={`${project.title} logo`}
+                  className="project-logo-image"
+                  src={logoSrc}
+                  onError={() => setLogoVisible(false)}
+                />
+              ) : (
+                <span>{project.placeholderLabel}</span>
+              )}
+            </div>
+            <div>
             <h3 className="project-title">{project.title}</h3>
             <p className="project-period">{project.period}</p>
+            </div>
           </div>
         </div>
         <p className="project-summary">{project.summary}</p>
@@ -646,7 +646,7 @@ function App() {
                     <>
                       <div className="portrait-rings" />
                       <div className="portrait-monogram">JJ</div>
-                      <div className="portrait-caption">Drop in `jj.jpeg`</div>
+                      <div className="portrait-caption">Jeremy Jacob</div>
                     </>
                   )}
                 </div>
@@ -699,8 +699,8 @@ function App() {
               }}
             >
               <p className="hero-eyebrow">
-                Production web apps, iOS builds, and calm systems that actually
-                hold up.
+                Production web apps, iOS builds, and calm systems that are built
+                to last.
               </p>
               <div className="hero-display">
                 <span className="hero-display-line">FULL STACK</span>
@@ -809,7 +809,7 @@ function App() {
             id="skills"
             eyebrow="What I'm Known For"
             title="Detail-first work, thoughtful systems, and a bias toward solving the whole problem."
-            description="Based on the way I work today. Easy to swap once you send a more specific list, but this is the right direction from your resume and project history."
+            description="The strengths I bring to product work across frontend, backend, data, and shipping."
           >
             <div className="known-for-list">
               {signatureSkills.map((skill, index) => (
@@ -832,7 +832,7 @@ function App() {
             id="frameworks"
             eyebrow="Frameworks"
             title="The tools I reach for when I need to move quickly without sacrificing structure."
-            description="The grid flips with the page, keeping the stack loud, readable, and intentionally different from the surrounding surface."
+            description="Favorite resources for integrated external frameworks and architectures to bring clean, structured, and robust apps to fruition."
           >
             <div className="badge-grid">
               {frameworks.map((item) => (
