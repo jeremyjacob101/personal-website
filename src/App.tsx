@@ -461,8 +461,8 @@ function ProjectCard({
               )}
             </div>
             <div>
-            <h3 className="project-title">{project.title}</h3>
-            <p className="project-period">{project.period}</p>
+              <h3 className="project-title">{project.title}</h3>
+              <p className="project-period">{project.period}</p>
             </div>
           </div>
         </div>
