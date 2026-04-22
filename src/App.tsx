@@ -86,6 +86,45 @@ type ViewTransitionCapableDocument = Document & {
 
 const THEME_STORAGE_KEY = "jeremy-jacob-portfolio-theme";
 
+function getCurrentNavHref() {
+  const sectionEntries = navItems
+    .map((item) => {
+      const id = item.href.replace("#", "");
+      const element = document.getElementById(id);
+
+      return element ? { href: item.href, element } : null;
+    })
+    .filter(
+      (entry): entry is { href: string; element: HTMLElement } => entry !== null,
+    );
+
+  if (sectionEntries.length === 0) {
+    return "#home";
+  }
+
+  const anchorY = Math.min(window.innerHeight * 0.35, 260);
+  const pageBottom = window.scrollY + window.innerHeight;
+  const documentBottom = document.documentElement.scrollHeight - 16;
+
+  if (pageBottom >= documentBottom) {
+    return sectionEntries[sectionEntries.length - 1]?.href ?? "#home";
+  }
+
+  let currentHref = sectionEntries[0]?.href ?? "#home";
+
+  for (const { href, element } of sectionEntries) {
+    const rect = element.getBoundingClientRect();
+
+    if (rect.top <= anchorY) {
+      currentHref = href;
+    } else {
+      break;
+    }
+  }
+
+  return currentHref;
+}
+
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") {
     return "dark";
@@ -826,13 +865,80 @@ function StackTile({
 function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [profileImageVisible, setProfileImageVisible] = useState(true);
+  const [activeNavHref, setActiveNavHref] = useState("#home");
   const reducedMotion = useReducedMotion();
   const nextTheme = theme === "dark" ? "light" : "dark";
+  const clickedNavHrefRef = useRef<string | null>(null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
+
+  useEffect(() => {
+    const syncActiveNav = () => {
+      if (clickedNavHrefRef.current !== null) {
+        return;
+      }
+
+      setActiveNavHref(getCurrentNavHref());
+    };
+
+    syncActiveNav();
+    window.addEventListener("scroll", syncActiveNav, { passive: true });
+    window.addEventListener("resize", syncActiveNav);
+
+    return () => {
+      window.removeEventListener("scroll", syncActiveNav);
+      window.removeEventListener("resize", syncActiveNav);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (clickedNavHrefRef.current === null) {
+      return;
+    }
+
+    let frameId = 0;
+    let timeoutId = 0;
+
+    const releaseClickedState = () => {
+      clickedNavHrefRef.current = null;
+      setActiveNavHref(getCurrentNavHref());
+    };
+
+    const checkScrollPosition = () => {
+      const clickedNavHref = clickedNavHrefRef.current;
+
+      if (!clickedNavHref) {
+        return;
+      }
+
+      const targetElement = document.getElementById(clickedNavHref.replace("#", ""));
+
+      if (!targetElement) {
+        releaseClickedState();
+        return;
+      }
+
+      const targetTop = targetElement.getBoundingClientRect().top;
+
+      if (Math.abs(targetTop) <= 24) {
+        releaseClickedState();
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(checkScrollPosition);
+    };
+
+    frameId = window.requestAnimationFrame(checkScrollPosition);
+    timeoutId = window.setTimeout(releaseClickedState, 1200);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [activeNavHref]);
 
   function toggleTheme() {
     const applyTheme = () =>
@@ -858,7 +964,7 @@ function App() {
   }
 
   return (
-    <div className="page-shell" id="home">
+    <div className="page-shell">
       <header className="topbar">
         <div className="topbar-inner">
           <div className="topbar-actions">
@@ -867,9 +973,14 @@ function App() {
                 <a
                   key={item.href}
                   aria-label={item.label}
-                  className="nav-link"
+                  aria-current={activeNavHref === item.href ? "location" : undefined}
+                  className={`nav-link${activeNavHref === item.href ? " is-active" : ""}`}
                   href={item.href}
                   title={item.label}
+                  onClick={() => {
+                    clickedNavHrefRef.current = item.href;
+                    setActiveNavHref(item.href);
+                  }}
                 >
                   <item.icon />
                 </a>
@@ -968,7 +1079,7 @@ function App() {
         </aside>
 
         <main className="content">
-          <section className="hero section">
+          <section className="hero section" id="home">
             <motion.div
               className="hero-content"
               initial={reducedMotion ? undefined : { opacity: 0, y: 34 }}
