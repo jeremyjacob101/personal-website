@@ -200,19 +200,19 @@ const documentItems: DocumentItem[] = [
   {
     label: "Resume",
     href: "/pdfs/resume.pdf",
-    downloadName: "resume.pdf",
+    downloadName: "Jeremy Jacob Resume.pdf",
     icon: FileUser,
   },
   {
     label: "Cover Letter",
     href: "/pdfs/coverletter.pdf",
-    downloadName: "coverletter.pdf",
+    downloadName: "Jeremy Jacob Cover Letter.pdf",
     icon: Mail,
   },
   {
     label: "Portfolio",
     href: "/pdfs/portfolio.pdf",
-    downloadName: "portfolio.pdf",
+    downloadName: "Jeremy Jacob Portfolio.pdf",
     icon: BriefcaseBusiness,
   },
 ];
@@ -223,7 +223,7 @@ const experienceProjects: Project[] = [
     period: "2024 - Present",
     summary:
       "A full-stack movie discovery and showtimes platform that pulls fragmented Israeli cinema data into one seamless browsing experience.",
-    stack: ["React", "TypeScript", "Python", "Supabase"],
+    stack: ["React", "TypeScript", "Python"],
     logoFile: "kartiseret",
     placeholderLabel: "KS",
     links: [
@@ -236,17 +236,17 @@ const experienceProjects: Project[] = [
     period: "2025 - Present",
     summary:
       "Production product work focused on TypeScript feature delivery, configurable schedule exports, and debugging across the stack with product teammates.",
-    stack: ["TypeScript", "Product work", "PDF export", "Reliability"],
+    stack: ["TypeScript", "Product work", "Reliability"],
     logoFile: "schedulearn",
     placeholderLabel: "SC",
     links: [{ label: "Website", href: "https://schedulearn.com/" }],
   },
   {
     title: "Shabbat Alarm Clock",
-    period: "2026",
+    period: "2026 - Present",
     summary:
       "A calm local-first SwiftUI alarm app for weekly Shabbat routines, bilingual UX, and dependable notification behavior without a backend.",
-    stack: ["SwiftUI", "iOS", "Localization", "Notifications"],
+    stack: ["SwiftUI", "iOS", "Localization"],
     logoFile: "shabbatalarmclock",
     placeholderLabel: "SA",
     links: [
@@ -262,7 +262,7 @@ const experienceProjects: Project[] = [
   },
   {
     title: "Jerusalem Heritage Realty",
-    period: "2025",
+    period: "2025 - Present",
     summary:
       "A responsive real-estate website built from scratch with reusable Next.js components and integrations that keep listings feeling current and easy to browse.",
     stack: ["Next.js", "Responsive UI", "Integrations"],
@@ -283,7 +283,7 @@ const personalProjects: Project[] = [
     period: "2026",
     summary:
       "A browser extension that adds a one-click Play in IINA flow to Plex Web by resolving stream URLs and handing playback off to the native desktop app.",
-    stack: ["Browser extension", "JavaScript", "Plex", "Desktop workflow"],
+    stack: ["Browser extension", "JavaScript", "Desktop"],
     logoFile: "iinaplex",
     placeholderLabel: "IP",
     links: [{ label: "GitHub", href: "https://github.com/jeremyjacob101/IINAplex" }],
@@ -616,12 +616,10 @@ function AutoScrollRail({
     let frameId = 0;
     let isVisible = false;
     let lastTime = 0;
+    const trackWidth = itemsTrack.scrollWidth;
+    let virtualScrollLeft = direction === "reverse" ? trackWidth : 0;
 
-    if (direction === "reverse") {
-      rail.scrollLeft = itemsTrack.scrollWidth;
-    } else {
-      rail.scrollLeft = 0;
-    }
+    rail.scrollLeft = virtualScrollLeft;
 
     const step = (time: number) => {
       if (!isVisible) {
@@ -639,19 +637,20 @@ function AutoScrollRail({
       const offset = speed * delta;
 
       if (direction === "reverse") {
-        rail.scrollLeft -= offset;
+        virtualScrollLeft -= offset;
 
-        if (rail.scrollLeft <= 0) {
-          rail.scrollLeft += itemsTrack.scrollWidth;
+        if (virtualScrollLeft <= 0) {
+          virtualScrollLeft += trackWidth;
         }
       } else {
-        rail.scrollLeft += offset;
+        virtualScrollLeft += offset;
 
-        if (rail.scrollLeft >= itemsTrack.scrollWidth) {
-          rail.scrollLeft -= itemsTrack.scrollWidth;
+        if (virtualScrollLeft >= trackWidth) {
+          virtualScrollLeft -= trackWidth;
         }
       }
 
+      rail.scrollLeft = virtualScrollLeft;
       frameId = window.requestAnimationFrame(step);
     };
 
@@ -716,13 +715,26 @@ function LanguagesRail({ items }: { items: BadgeItem[] }) {
 }
 
 function StackRail({ items, theme }: { items: StackItem[]; theme: Theme }) {
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 720px)");
+    const updateViewport = () => {
+      setIsMobileViewport(mediaQuery.matches);
+    };
+
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+    return () => mediaQuery.removeEventListener("change", updateViewport);
+  }, []);
+
   return (
     <AutoScrollRail
       ariaLabel="Frameworks, platforms, and technologies"
       shellClassName="stack-rail-shell"
       railClassName="stack-rail"
       trackClassName="stack-track"
-      speed={45}
+      speed={isMobileViewport ? 24 : 45}
       direction="forward"
     >
       {items.map((item) => (
