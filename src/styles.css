@@ -48,6 +48,11 @@
   --button-primary-text: #091018;
   --button-secondary-bg: rgba(255, 255, 255, 0.03);
   --button-secondary-hover: rgba(255, 255, 255, 0.07);
+  --pdf-control-bg: var(--button-secondary-bg);
+  --pdf-control-hover: var(--button-secondary-hover);
+  --pdf-control-border: var(--line);
+  --pdf-control-border-hover: var(--line-strong);
+  --pdf-control-text: var(--text);
   --chip-bg: rgba(255, 255, 255, 0.035);
   --chip-text: var(--muted-strong);
   --project-logo-border: rgba(15, 23, 42, 0.08);
@@ -123,6 +128,11 @@
   --button-primary-text: #f8fafc;
   --button-secondary-bg: rgba(15, 23, 42, 0.045);
   --button-secondary-hover: rgba(15, 23, 42, 0.09);
+  --pdf-control-bg: rgba(255, 255, 255, 0.86);
+  --pdf-control-hover: #ffffff;
+  --pdf-control-border: rgba(15, 23, 42, 0.14);
+  --pdf-control-border-hover: rgba(15, 23, 42, 0.2);
+  --pdf-control-text: #0f172a;
   --chip-bg: rgba(15, 23, 42, 0.05);
   --chip-text: #334155;
   --project-logo-border: rgba(255, 255, 255, 0.08);
@@ -1187,11 +1197,12 @@ select {
   place-items: center;
   width: 3rem;
   height: 3rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--pdf-control-border);
   border-radius: 999px;
-  background: var(--button-secondary-bg);
-  color: var(--text);
+  background: var(--pdf-control-bg);
+  color: var(--pdf-control-text);
   cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
   transition:
     transform 180ms ease,
     border-color 180ms ease,
@@ -1207,8 +1218,8 @@ select {
 .pdf-viewer-icon-button:hover,
 .pdf-viewer-icon-button:focus-visible {
   transform: translateY(-2px);
-  border-color: var(--line-strong);
-  background: var(--button-secondary-hover);
+  border-color: var(--pdf-control-border-hover);
+  background: var(--pdf-control-hover);
   color: var(--accent);
   outline: none;
 }
