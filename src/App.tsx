@@ -905,19 +905,28 @@ function App() {
   const reducedMotion = useReducedMotion();
   const nextTheme = theme === "dark" ? "light" : "dark";
   const clickedNavHrefRef = useRef<string | null>(null);
+  const hashBootstrapInProgressRef = useRef(false);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
-  function scrollToHashTarget(hash: string, behavior: ScrollBehavior) {
+  function scrollToHashTarget(
+    hash: string,
+    behavior: ScrollBehavior,
+    options?: { trackNav?: boolean },
+  ) {
+    const shouldTrackNav = options?.trackNav ?? true;
+
     if (!hash) {
       return;
     }
 
     if (hash === "#home") {
-      clickedNavHrefRef.current = "#home";
+      if (shouldTrackNav) {
+        clickedNavHrefRef.current = "#home";
+      }
       setActiveNavHref("#home");
       window.scrollTo({ top: 0, behavior });
       return;
@@ -936,14 +945,19 @@ function App() {
       return;
     }
 
-    clickedNavHrefRef.current = normalizedHash;
+    if (shouldTrackNav) {
+      clickedNavHrefRef.current = normalizedHash;
+    }
     setActiveNavHref(normalizedHash);
     targetElement.scrollIntoView({ block: "start", behavior });
   }
 
   useEffect(() => {
     const syncActiveNav = () => {
-      if (clickedNavHrefRef.current !== null) {
+      if (
+        clickedNavHrefRef.current !== null ||
+        hashBootstrapInProgressRef.current
+      ) {
         return;
       }
 
@@ -1019,65 +1033,77 @@ function App() {
   useEffect(() => {
     let firstFrameId = 0;
     let secondFrameId = 0;
-    let timeoutId = 0;
-    let resizeObserverTimeoutId = 0;
     let isCancelled = false;
-    const resizeObserver = new ResizeObserver(() => {
-      handleInitialHash();
-    });
+    const initialHash = window.location.hash;
+    const isKnownHash =
+      initialHash === "#home" ||
+      navItems.some((item) => item.href === initialHash);
 
-    const syncHashWithoutTracking = (hash: string) => {
+    const alignHashWithoutTracking = (hash: string) => {
       if (!hash) {
         return;
       }
 
-      scrollToHashTarget(hash, "auto");
+      scrollToHashTarget(hash, "auto", { trackNav: false });
       clickedNavHrefRef.current = null;
     };
 
-    const handleHashChange = () => {
-      syncHashWithoutTracking(window.location.hash);
+    const finalizeHashBootstrap = () => {
+      hashBootstrapInProgressRef.current = false;
+      setActiveNavHref(getCurrentNavHref());
     };
 
-    const handleInitialHash = () => {
-      const hash = window.location.hash;
-
-      if (!hash) {
+    const runFinalAlignment = () => {
+      if (isCancelled || !isKnownHash) {
         return;
       }
 
-      syncHashWithoutTracking(hash);
+      alignHashWithoutTracking(initialHash);
+      finalizeHashBootstrap();
     };
 
-    if (window.location.hash) {
-      firstFrameId = window.requestAnimationFrame(() => {
-        handleInitialHash();
-        secondFrameId = window.requestAnimationFrame(() => {
-          handleInitialHash();
+    const handleInitialLoad = () => {
+      if ("fonts" in document) {
+        document.fonts.ready.then(() => {
+          runFinalAlignment();
         });
-      });
-
-      if (document.readyState === "complete") {
-        timeoutId = window.setTimeout(() => {
-          handleInitialHash();
-        }, 0);
-      } else {
-        window.addEventListener("load", handleInitialHash, { once: true });
+        return;
       }
 
-      document.fonts.ready.then(() => {
+      runFinalAlignment();
+    };
+
+    const handleHashChange = () => {
+      if (hashBootstrapInProgressRef.current) {
+        return;
+      }
+
+      alignHashWithoutTracking(window.location.hash);
+    };
+
+    if (isKnownHash) {
+      hashBootstrapInProgressRef.current = true;
+      setActiveNavHref(initialHash);
+
+      firstFrameId = window.requestAnimationFrame(() => {
         if (isCancelled) {
           return;
         }
 
-        handleInitialHash();
+        secondFrameId = window.requestAnimationFrame(() => {
+          if (isCancelled) {
+            return;
+          }
+
+          alignHashWithoutTracking(initialHash);
+        });
       });
 
-      resizeObserver.observe(document.documentElement);
-      resizeObserver.observe(document.body);
-      resizeObserverTimeoutId = window.setTimeout(() => {
-        resizeObserver.disconnect();
-      }, 1600);
+      if (document.readyState === "complete") {
+        handleInitialLoad();
+      } else {
+        window.addEventListener("load", handleInitialLoad, { once: true });
+      }
     }
 
     window.addEventListener("hashchange", handleHashChange);
@@ -1086,10 +1112,8 @@ function App() {
       isCancelled = true;
       window.cancelAnimationFrame(firstFrameId);
       window.cancelAnimationFrame(secondFrameId);
-      window.clearTimeout(timeoutId);
-      window.clearTimeout(resizeObserverTimeoutId);
-      resizeObserver.disconnect();
-      window.removeEventListener("load", handleInitialHash);
+      hashBootstrapInProgressRef.current = false;
+      window.removeEventListener("load", handleInitialLoad);
       window.removeEventListener("hashchange", handleHashChange);
     };
   }, []);
