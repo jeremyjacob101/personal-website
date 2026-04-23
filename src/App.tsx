@@ -1034,7 +1034,23 @@ function App() {
                   className={`nav-link${activeNavHref === item.href ? " is-active" : ""}`}
                   href={item.href}
                   title={item.label}
-                  onClick={() => {
+                  onClick={(event) => {
+                    if (item.href === "#home") {
+                      event.preventDefault();
+                      clickedNavHrefRef.current = item.href;
+                      setActiveNavHref(item.href);
+                      window.history.replaceState(
+                        null,
+                        "",
+                        `${window.location.pathname}${window.location.search}`,
+                      );
+                      window.scrollTo({
+                        top: 0,
+                        behavior: reducedMotion ? "auto" : "smooth",
+                      });
+                      return;
+                    }
+
                     clickedNavHrefRef.current = item.href;
                     setActiveNavHref(item.href);
                   }}
