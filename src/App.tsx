@@ -1017,22 +1017,79 @@ function App() {
   }, [activeNavHref]);
 
   useEffect(() => {
-    let frameId = 0;
+    let firstFrameId = 0;
+    let secondFrameId = 0;
+    let timeoutId = 0;
+    let resizeObserverTimeoutId = 0;
+    let isCancelled = false;
+    const resizeObserver = new ResizeObserver(() => {
+      handleInitialHash();
+    });
+
+    const syncHashWithoutTracking = (hash: string) => {
+      if (!hash) {
+        return;
+      }
+
+      scrollToHashTarget(hash, "auto");
+      clickedNavHrefRef.current = null;
+    };
 
     const handleHashChange = () => {
-      scrollToHashTarget(window.location.hash, "auto");
+      syncHashWithoutTracking(window.location.hash);
+    };
+
+    const handleInitialHash = () => {
+      const hash = window.location.hash;
+
+      if (!hash) {
+        return;
+      }
+
+      syncHashWithoutTracking(hash);
     };
 
     if (window.location.hash) {
-      frameId = window.requestAnimationFrame(() => {
-        handleHashChange();
+      firstFrameId = window.requestAnimationFrame(() => {
+        handleInitialHash();
+        secondFrameId = window.requestAnimationFrame(() => {
+          handleInitialHash();
+        });
       });
+
+      if (document.readyState === "complete") {
+        timeoutId = window.setTimeout(() => {
+          handleInitialHash();
+        }, 0);
+      } else {
+        window.addEventListener("load", handleInitialHash, { once: true });
+      }
+
+      document.fonts.ready.then(() => {
+        if (isCancelled) {
+          return;
+        }
+
+        handleInitialHash();
+      });
+
+      resizeObserver.observe(document.documentElement);
+      resizeObserver.observe(document.body);
+      resizeObserverTimeoutId = window.setTimeout(() => {
+        resizeObserver.disconnect();
+      }, 1600);
     }
 
     window.addEventListener("hashchange", handleHashChange);
 
     return () => {
-      window.cancelAnimationFrame(frameId);
+      isCancelled = true;
+      window.cancelAnimationFrame(firstFrameId);
+      window.cancelAnimationFrame(secondFrameId);
+      window.clearTimeout(timeoutId);
+      window.clearTimeout(resizeObserverTimeoutId);
+      resizeObserver.disconnect();
+      window.removeEventListener("load", handleInitialHash);
       window.removeEventListener("hashchange", handleHashChange);
     };
   }, []);
