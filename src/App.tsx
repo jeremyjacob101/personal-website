@@ -911,6 +911,36 @@ function App() {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
+  function scrollToHashTarget(hash: string, behavior: ScrollBehavior) {
+    if (!hash) {
+      return;
+    }
+
+    if (hash === "#home") {
+      clickedNavHrefRef.current = "#home";
+      setActiveNavHref("#home");
+      window.scrollTo({ top: 0, behavior });
+      return;
+    }
+
+    const normalizedHash = hash.startsWith("#") ? hash : `#${hash}`;
+    const targetId = normalizedHash.slice(1);
+
+    if (!navItems.some((item) => item.href === normalizedHash)) {
+      return;
+    }
+
+    const targetElement = document.getElementById(targetId);
+
+    if (!targetElement) {
+      return;
+    }
+
+    clickedNavHrefRef.current = normalizedHash;
+    setActiveNavHref(normalizedHash);
+    targetElement.scrollIntoView({ block: "start", behavior });
+  }
+
   useEffect(() => {
     const syncActiveNav = () => {
       if (clickedNavHrefRef.current !== null) {
@@ -950,6 +980,16 @@ function App() {
         return;
       }
 
+      if (clickedNavHref === "#home") {
+        if (window.scrollY <= 2) {
+          releaseClickedState();
+          return;
+        }
+
+        frameId = window.requestAnimationFrame(checkScrollPosition);
+        return;
+      }
+
       const targetElement = document.getElementById(clickedNavHref.replace("#", ""));
 
       if (!targetElement) {
@@ -975,6 +1015,27 @@ function App() {
       window.clearTimeout(timeoutId);
     };
   }, [activeNavHref]);
+
+  useEffect(() => {
+    let frameId = 0;
+
+    const handleHashChange = () => {
+      scrollToHashTarget(window.location.hash, "auto");
+    };
+
+    if (window.location.hash) {
+      frameId = window.requestAnimationFrame(() => {
+        handleHashChange();
+      });
+    }
+
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!activeDocument) {
@@ -1035,24 +1096,28 @@ function App() {
                   href={item.href}
                   title={item.label}
                   onClick={(event) => {
+                    event.preventDefault();
+
+                    const nextUrl =
+                      item.href === "#home"
+                        ? `${window.location.pathname}${window.location.search}`
+                        : `${window.location.pathname}${window.location.search}${item.href}`;
+                    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+                    if (currentUrl !== nextUrl) {
+                      if (item.href === "#home") {
+                        window.history.replaceState(null, "", nextUrl);
+                      } else {
+                        window.history.pushState(null, "", nextUrl);
+                      }
+                    }
+
                     if (item.href === "#home") {
-                      event.preventDefault();
-                      clickedNavHrefRef.current = item.href;
-                      setActiveNavHref(item.href);
-                      window.history.replaceState(
-                        null,
-                        "",
-                        `${window.location.pathname}${window.location.search}`,
-                      );
-                      window.scrollTo({
-                        top: 0,
-                        behavior: reducedMotion ? "auto" : "smooth",
-                      });
+                      scrollToHashTarget("#home", reducedMotion ? "auto" : "smooth");
                       return;
                     }
 
-                    clickedNavHrefRef.current = item.href;
-                    setActiveNavHref(item.href);
+                    scrollToHashTarget(item.href, reducedMotion ? "auto" : "smooth");
                   }}
                 >
                   <item.icon />
