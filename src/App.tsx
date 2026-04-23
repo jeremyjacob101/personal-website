@@ -199,19 +199,19 @@ const contactItems: ContactItem[] = [
 const documentItems: DocumentItem[] = [
   {
     label: "Resume",
-    href: "/pdfs/resume.pdf",
+    href: "/pdfs/Jeremy Jacob Resume.pdf",
     downloadName: "Jeremy Jacob Resume.pdf",
     icon: FileUser,
   },
   {
     label: "Cover Letter",
-    href: "/pdfs/coverletter.pdf",
+    href: "/pdfs/Jeremy Jacob Cover Letter.pdf",
     downloadName: "Jeremy Jacob Cover Letter.pdf",
     icon: Mail,
   },
   {
     label: "Portfolio",
-    href: "/pdfs/portfolio.pdf",
+    href: "/pdfs/Jeremy Jacob Portfolio.pdf",
     downloadName: "Jeremy Jacob Portfolio.pdf",
     icon: BriefcaseBusiness,
   },
