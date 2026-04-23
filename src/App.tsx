@@ -1,4 +1,6 @@
 import {
+  Suspense,
+  lazy,
   useEffect,
   useRef,
   useState,
@@ -8,22 +10,28 @@ import {
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { motion, useReducedMotion } from "framer-motion";
+import {
+  BriefcaseBusiness,
+  Download,
+  FileUser,
+  Mail,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import type { IconType } from "react-icons";
 import {
   FaArrowRightLong,
   FaArrowUpRightFromSquare,
   FaBriefcase,
+  FaCode,
   FaEnvelope,
-  FaFolderOpen,
   FaGithub,
   FaGlobe,
   FaHouse,
   FaLinkedinIn,
   FaPhone,
   FaReact,
-  FaToolbox,
   FaUserGear,
-  FaCode,
 } from "react-icons/fa6";
 import { FiSun } from "react-icons/fi";
 import {
@@ -79,12 +87,20 @@ type ContactItem = {
   icon: IconType;
 };
 
+type DocumentItem = {
+  label: string;
+  href: string;
+  downloadName: string;
+  icon: LucideIcon;
+};
+
 type Theme = "dark" | "light";
 type ViewTransitionCapableDocument = Document & {
   startViewTransition?: (update: () => void) => void;
 };
 
 const THEME_STORAGE_KEY = "jeremy-jacob-portfolio-theme";
+const PdfDocumentPreview = lazy(() => import("./PdfDocumentPreview"));
 
 function getCurrentNavHref() {
   const sectionEntries = navItems
@@ -142,10 +158,8 @@ function getInitialTheme(): Theme {
 const navItems = [
   { label: "Home", href: "#home", icon: FaHouse },
   { label: "Experience", href: "#experience", icon: FaBriefcase },
-  { label: "Projects", href: "#personal-projects", icon: FaFolderOpen },
   { label: "Known For", href: "#skills", icon: FaUserGear },
-  { label: "Frameworks", href: "#frameworks", icon: FaToolbox },
-  { label: "Languages", href: "#languages", icon: FaCode },
+  { label: "Stack", href: "#frameworks", icon: FaCode },
   { label: "Contact", href: "#contact", icon: FaEnvelope },
 ];
 
@@ -179,6 +193,27 @@ const contactItems: ContactItem[] = [
     text: "jeremyjacob.site",
     href: "https://jeremyjacob.site",
     icon: FaGlobe,
+  },
+];
+
+const documentItems: DocumentItem[] = [
+  {
+    label: "Resume",
+    href: "/pdfs/resume.pdf",
+    downloadName: "resume.pdf",
+    icon: FileUser,
+  },
+  {
+    label: "Cover Letter",
+    href: "/pdfs/coverletter.pdf",
+    downloadName: "coverletter.pdf",
+    icon: Mail,
+  },
+  {
+    label: "Portfolio",
+    href: "/pdfs/portfolio.pdf",
+    downloadName: "portfolio.pdf",
+    icon: BriefcaseBusiness,
   },
 ];
 
@@ -671,7 +706,7 @@ function LanguagesRail({ items }: { items: BadgeItem[] }) {
       speed={75}
       direction="reverse"
     >
-      {items.map((item) => (
+      {[...items].reverse().map((item) => (
         <div key={item.name} className="language-badge" role="listitem">
           <img alt={item.alt} loading="lazy" src={item.src} />
         </div>
@@ -866,6 +901,7 @@ function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [profileImageVisible, setProfileImageVisible] = useState(true);
   const [activeNavHref, setActiveNavHref] = useState("#home");
+  const [activeDocument, setActiveDocument] = useState<DocumentItem | null>(null);
   const reducedMotion = useReducedMotion();
   const nextTheme = theme === "dark" ? "light" : "dark";
   const clickedNavHrefRef = useRef<string | null>(null);
@@ -939,6 +975,27 @@ function App() {
       window.clearTimeout(timeoutId);
     };
   }, [activeNavHref]);
+
+  useEffect(() => {
+    if (!activeDocument) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setActiveDocument(null);
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeDocument]);
 
   function toggleTheme() {
     const applyTheme = () =>
@@ -1237,6 +1294,28 @@ function App() {
             description="If you need someone who can move between product thinking, frontend feel, backend logic, and debugging without dropping the details, I'm easy to reach."
           >
             <Reveal className="contact-cta">
+              <div className="contact-documents">
+                {documentItems.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <button
+                      key={item.label}
+                      type="button"
+                      className="document-card"
+                      aria-haspopup="dialog"
+                      aria-label={`Open ${item.label} PDF viewer`}
+                      onClick={() => setActiveDocument(item)}
+                    >
+                      <span className="document-card-label">{item.label}</span>
+                      <span className="document-card-icon" aria-hidden="true">
+                        <Icon />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
               <div className="contact-list" role="list">
                 {contactItems.map((item) => {
                   const Icon = item.icon;
@@ -1270,6 +1349,56 @@ function App() {
           </Section>
         </main>
       </div>
+
+      {activeDocument ? (
+        <div
+          className="pdf-viewer-overlay"
+          role="presentation"
+          onClick={() => setActiveDocument(null)}
+        >
+          <div
+            className="pdf-viewer-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${activeDocument.label} PDF viewer`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="pdf-viewer-actions">
+              <a
+                className="pdf-viewer-icon-button"
+                href={activeDocument.href}
+                download={activeDocument.downloadName}
+                aria-label={`Download ${activeDocument.label}`}
+                title={`Download ${activeDocument.label}`}
+              >
+                <Download />
+              </a>
+
+              <button
+                type="button"
+                className="pdf-viewer-icon-button"
+                aria-label={`Close ${activeDocument.label} viewer`}
+                onClick={() => setActiveDocument(null)}
+                title={`Close ${activeDocument.label}`}
+                autoFocus
+              >
+                <X />
+              </button>
+            </div>
+
+            <div className="pdf-viewer-body">
+              <Suspense
+                fallback={<div className="pdf-viewer-loading" aria-hidden="true" />}
+              >
+                <PdfDocumentPreview
+                  href={activeDocument.href}
+                  label={activeDocument.label}
+                />
+              </Suspense>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
